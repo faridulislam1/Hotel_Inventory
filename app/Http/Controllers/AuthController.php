@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 use App\Models\User;
+use App\Models\new_user;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth; 
@@ -21,14 +22,166 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\DB;
 use \Firebase\JWT\JWT;
 use Illuminate\Support\Facades\Log;
+use App\Models\otherImage;
 
-require_once public_path('php-jwt/JWT.php');
-require_once public_path('php-jwt/BeforeValidException.php');
-require_once public_path('php-jwt/ExpiredException.php');
-require_once public_path('php-jwt/SignatureInvalidException.php');
+// require_once public_path('php-jwt/JWT.php');
+// require_once public_path('php-jwt/BeforeValidException.php');
+// require_once public_path('php-jwt/ExpiredExceptio n.php');
+// require_once public_path('php-jwt/SignatureInvalidException.php');
+
  class AuthController extends Controller
 {
     private static $hotel, $countries, $name, $product, $image, $imageName, $directory, $imageUrl, $otherImage, $imageExtension;
+
+    public function __construct()
+    {
+        $this->middleware('auth:api', ['except' => ['login', 'register']]);
+    }
+
+    public function login(Request $request)
+    {
+        $request->validate([
+            'emailID' => 'required|string|email',
+            'password' => 'required|string',
+        ]);
+    
+        // Retrieve the credentials from the request
+        $credentials = $request->only('emailID', 'password');
+    
+        // Attempt to authenticate the user
+        if (!Auth::attempt($credentials)) {
+            return response()->json([
+                'message' => 'Invalid email or password',
+            ], 401);
+        }
+        // Get the authenticated user
+        $user = Auth::user();
+        $user->makeHidden(['created_at', 'updated_at']); // Hide timestamps if needed
+    
+        return response()->json([
+            'user' => [
+                'emailID' => $user->emailID, 
+                'country' => $user->country,
+                'division' => $user->division,
+                'district' => $user->district, 
+                'address' => $user->address,
+                'contact_no' => $user->contact_no, // Add contact_no field
+                'company_name' => $user->company_name, // Add company_name field
+                'company_persons_name' => $user->company_persons_name, // Add company_persons_name field
+                'currency' => $user->currency, // Add currency field
+                'balance' => $user->balance, // Add balance field
+                'credit_balance' => $user->credit_balance, // Add credit_balance field
+                'status' => $user->status, // Add status field
+                'token' => Auth::tokenById($user->id), // Token for the authenticated user
+            ],
+            'message' => 'Successfully logged in',
+        ]);
+    }
+    
+        public function register(Request $request)
+        {
+            // Validate the request
+            $request->validate([
+                'emailID' => 'required|string|email|max:255|unique:users,emailID,' . $request->emailID,
+                'address' => 'nullable|string|max:255',
+                'division' => 'nullable|string|max:255',
+                'country' => 'nullable|string|max:255',
+                'company_name' => 'nullable|string|max:255',
+                'company_persons_name' => 'nullable|string|max:255',
+                'district' => 'nullable|string|max:255',
+                'contact_no' => 'nullable|string|max:15', // Adjust max length as needed
+                'currency' => 'nullable|string|max:3', // Currency typically short (e.g., BDT)
+                'balance' => 'nullable|numeric', // Balance should be numeric
+                'credit_balance' => 'nullable|numeric', // Credit balance should be numeric
+                'status' => 'nullable|string|max:20', // Status should have a reasonable length
+                'password' => 'required|string|min:8', // Password must be present and at least 8 characters long
+            ], [
+                'emailID.unique' => 'The email has already been taken.',
+            ]);
+        
+            // Create the user
+            $user = User::create([
+                'emailID' => $request->emailID,
+                'mobile' => $request->mobile,
+                'address' => $request->address,
+                'division' => $request->division,
+                'country' => $request->country,
+                'company_name' => $request->company_name,
+                'company_persons_name' => $request->company_persons_name,
+                'district' => $request->district,
+                'contact_no' => $request->contact_no,
+                'currency' => $request->currency,
+                'balance' => $request->balance ?? 0.00, // Default balance to 0 if not provided
+                'credit_balance' => $request->credit_balance ?? 0.00, // Default credit balance to 0 if not provided
+                'status' => $request->status ?? 'active', // Default status to 'active' if not provided
+                'password' => bcrypt($request->password),
+                // 'role' => $request->role ?? 'user', // Uncomment if roles are required
+            ]);
+        
+            return response()->json([
+                'message' => 'User created successfully',
+                // 'user' => $user // Uncomment if you want to return user details
+            ]);
+        }
+        
+        
+// public function login1(Request $request)
+// {
+//     $request->validate([
+//         'emailID' => 'required|string|email',
+//         'password' => 'required|string',
+//     ]);
+
+//     $credentials = $request->only('emailID', 'password');
+
+//     if (!Auth::attempt($credentials)) {
+//         return response()->json([
+//             'message' => 'Invalid email or password',
+//         ], 401);
+//     }
+
+//     $user = Auth::user();
+//     $user->makeHidden(['created_at', 'updated_at']);
+
+//     return response()->json([
+//         'user' => [
+//             'emailID' => $user->emailID,
+//             //'role' => $user->role,
+//             'token' => Auth::tokenById($user->id),
+//         ],
+//         'message' => 'Successfully logged in',
+//     ]);
+// }
+
+public function register1(Request $request)
+{
+    // Validate the request
+    // $request->validate([ 
+    //     'name' => 'required|string|max:255',
+    //     'emailID' => 'required|string|email|max:255|unique:new_users',
+    //     'password' => 'required|string|min:6',
+    //     'mobile' => 'required|string',
+    //     'country' => 'nullable|string',
+    //     'division' => 'nullable|string',
+    //     'address' => 'nullable|string',
+    // ]);
+
+    // Create the new user
+    $user = new_user::create([
+        'name' => $request->name,
+        'emailID' => $request->emailID,
+        'password' => bcrypt($request->password),
+        'mobile' => $request->mobile,
+        'country' => $request->country,
+        'division' => $request->division,
+        'address' => $request->address,
+    ]);
+
+    return response()->json([
+        'message' => 'User created successfully',
+        'user' => $user
+    ]);
+}
 
     public function storehotel()
     {
@@ -49,11 +202,12 @@ require_once public_path('php-jwt/SignatureInvalidException.php');
        
     public function manageProduct(Request $request)
     {
-        $token = $request->header('Authorization');
-        if (!empty($token)) {
-            if ($this->verify_jwt_token($token)) {
-                try {
+        // $token = $request->header('Authorization');
+        // if (!empty($token)) {
+        //     if ($this->verify_jwt_token($token)) {
+        //         try {
                     // Set custom headers
+                    
                     $countries = Country::with(['cities.hotels.rooms'])->get();
                     
                     // Loop through each country and hide the specified fields
@@ -71,16 +225,16 @@ require_once public_path('php-jwt/SignatureInvalidException.php');
                     });
 
                     return response()->json($countries);
-                } catch (\Exception $ex) {
-                    // Log or handle exceptions
-                    return response()->json(['error' => 'An error occurred: ' . $ex->getMessage()], 500);
-                }
-            } else {
-                return response()->json(['error' => 'Unauthorized'], 401);
-            }
-        } else {
-            return response()->json(['error' => 'Authorization header is missing'], 401);
-        }
+        //         } catch (\Exception $ex) {
+        //             // Log or handle exceptions
+        //             return response()->json(['error' => 'An error occurred: ' . $ex->getMessage()], 500);
+        //         }
+        //     } else {
+        //         return response()->json(['error' => 'Unauthorized'], 401);
+        //     }
+        // } else {
+        //     return response()->json(['error' => 'Authorization header is missing'], 401);
+        // }
     }
     public static function getImageUrl($request)
     {
@@ -96,30 +250,8 @@ require_once public_path('php-jwt/SignatureInvalidException.php');
 
         return null;
     }
-    public static function getMultiImageUrl($request)
-    {
-        if ($request->hasFile('multiple_image')) {
-            $images = $request->file('multiple_image');
-            $imageUrls = [];
-
-            foreach ($images as $image) {
-                if ($image->isValid()) {
-                    $imageExtension = $image->getClientOriginalExtension();
-                    $imageName = rand(1, 500000) . '.' . $imageExtension;
-                    $directory = 'upload/product-other-images/';
-                    $image->move($directory, $imageName);
-
-                    $imageUrl = $directory . $imageName;
-                    $imageUrls[] = $imageUrl;
-                } else {
-                }
-            }
-            return $imageUrls;
-        } else {
-            return [];
-        }
-    }
-
+   
+    
     public function savehotel(Request $request)
     {
         $country = Country::create([
@@ -137,12 +269,17 @@ require_once public_path('php-jwt/SignatureInvalidException.php');
         }
 
         $singleImageUrl = self::getImageUrl($request);
-        $multipleImageUrls = self::getMultiImageUrl($request);
+        //$multipleImageUrls = self::newOtherImage($request);
 
-        hotel::create([
+        $multipleImageUrls = [];
+        if ($request->hasFile(key: 'other_image')) {
+            $multipleImageUrls = $this->newOtherImages($request->file('other_image'));
+        }
+    
+        // Create Hotel
+        Hotel::create([
             'hotel' => $request->hotel,
             'city_id' => $city->id,
-            // 'country_id' => $country->id,
             'embed_code' => $request->embed_code,
             'landmark' => $request->landmark,
             'rating' => $request->rating,
@@ -153,11 +290,11 @@ require_once public_path('php-jwt/SignatureInvalidException.php');
             'term_condition' => $request->term_condition,
             'longitude' => $request->longitude,
             'litetitude' => $request->litetitude,
-            'Single_image' => $singleImageUrl,
-            'multiple_image' => $multipleImageUrls !== null && is_array($multipleImageUrls) ? serialize($multipleImageUrls) : null,
+            'single_image' => $singleImageUrl,
+            'multiple_image' => !empty($multipleImageUrls) ? serialize($multipleImageUrls) : null,
             'facilities' => is_array($request->facilities) ? implode(',', $request->facilities) : $request->facilities,
         ]);
-
+    
         return response()->json(['message' => 'Hotel Data successfully inserted'], 201);
     }
   
@@ -273,61 +410,7 @@ require_once public_path('php-jwt/SignatureInvalidException.php');
         Hotel::deleteProduct($request->id);
         return back()->with('message', 'Info deleted');
     }  
-    //   public function __construct()
-    //     {
-    //         $this->middleware('auth:api', ['except' => ['login', 'register']]);
-    //     }
-
-    // public function login(Request $request)
-
-
-    // {
-
-    //     $request->validate([
-    //         'email' => 'required|string|email',
-    //         'password' => '  |string',
-    //     ]);
-    //     $credentials = $request->only('email', 'password');
-    //     $token = Auth::attempt($credentials);
-
-    //     if (!Auth::attempt($credentials)) {
-    //         return response()->json([
-    //             'message' => 'Invalid email or password',
-    //         ], 401);
-    //     }
-    //     $user = Auth::user();
-    //      $user->makeHidden(['created_at', 'updated_at']);
-
-    //     return response()->json([
-    //         'user' => [
-
-    //             'email' => $user->email,
-    //             'token' => $token,
-    //         ],
-    //         'messege' => 'Successfully Login',
-    //     ]);
-
-    // }
-
-    public function register(Request $request) 
-    {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:6',
-        ]);
-
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-        ]);
-
-        return response()->json([
-            'message' => 'User created successfully',
-            //'user' => $user
-        ]);
-    }
+  
 
     public function logout()
     {
@@ -355,17 +438,6 @@ require_once public_path('php-jwt/SignatureInvalidException.php');
     {
         Hotel::delete($request->id);
         return back()->with('message', 'Info deleted');
-    }
-
-    public function handle(Request $request, Closure $next)
-    {
-        return $next($request);
-
-        $restrictedIps = ['127.0.0.1', '102.129.158.0'];
-        if (in_array($request->ip(), $restrictedIps)) {
-            App::abort(403, 'Request forbidden');
-        }
-        return $next($request);
     }
 
     // Room Info
@@ -435,7 +507,6 @@ require_once public_path('php-jwt/SignatureInvalidException.php');
             return response()->json(['error' => 'Authorization header is missing'], 401);
         }
     }
-
 
     public function saveroom(Request $request)
     {
@@ -544,7 +615,6 @@ require_once public_path('php-jwt/SignatureInvalidException.php');
         $product->save();
         return response()->json(['message' => 'Room updated successfully'], 200);
     }
-
 
     public static function update(Request $request)
     {
@@ -718,149 +788,312 @@ require_once public_path('php-jwt/SignatureInvalidException.php');
     //     return response()->json($newHotel);
     // }
 
-    public function apisearch(Request $request)
-    {
-        try {
-            // Prepare the request data
-            $countryCode = $request->input('countryCode');
-            $cityCode = $request->input('cityCode');
+    // public function apisearch(Request $request)
+    // {
+    //     try {
+    //         // Prepare the request data
+    //         $countryCode = $request->input('countryCode');
+    //         $cityCode = $request->input('cityCode');
 
-            $requestData = [
-                'GetHotelAvailRQ' => [
-                    'SearchCriteria' => [
-                        'OffSet' => 1,
-                        'SortBy' => 'TotalRate',
-                        'SortOrder' => 'ASC',
-                        'PageSize' => 20,
-                        'TierLabels' => false,
-                        'GeoSearch' => [
-                            'GeoRef' => [
-                                'Radius' => 20,
-                                'UOM' => 'MI',
-                                'RefPoint' => [
-                                    'Value' => 'DFW',
-                                    'ValueContext' => 'CODE',
-                                    'RefPointType' => '6'
-                                ]
+    //         $requestData = [
+    //             'GetHotelAvailRQ' => [
+    //                 'SearchCriteria' => [
+    //                     'OffSet' => 1,
+    //                     'SortBy' => 'TotalRate',
+    //                     'SortOrder' => 'ASC',
+    //                     'PageSize' => 20,
+    //                     'TierLabels' => false,
+    //                     'GeoSearch' => [
+    //                         'GeoRef' => [
+    //                             'Radius' => 20,
+    //                             'UOM' => 'MI',
+    //                             'RefPoint' => [
+    //                                 'Value' => 'DFW',
+    //                                 'ValueContext' => 'CODE',
+    //                                 'RefPointType' => '6'
+    //                             ]
+    //                         ]
+    //                     ],
+    //                     'RateInfoRef' => [
+    //                         'ConvertedRateInfoOnly' => false,
+    //                         'CurrencyCode' => 'USD',
+    //                         'BestOnly' => '2',
+    //                         'PrepaidQualifier' => 'IncludePrepaid',
+    //                         'StayDateRange' => [
+    //                             'StartDate' => '2024-06-05',
+    //                             'EndDate' => '2024-06-08'
+    //                         ],
+    //                         'Rooms' => [
+    //                             'Room' => [
+    //                                 [
+    //                                     'Index' => 1,
+    //                                     'Adults' => 1,
+    //                                     'Children' => 0
+    //                                 ]
+    //                             ]
+    //                         ],
+    //                         'InfoSource' => '100,110,112,113'
+    //                     ],
+    //                     'HotelPref' => [
+    //                         'SabreRating' => [
+    //                             'Min' => '3',
+    //                             'Max' => '5'
+    //                         ]
+    //                     ],
+    //                     'ImageRef' => [
+    //                         'Type' => 'MEDIUM',
+    //                         'LanguageCode' => 'EN'
+    //                     ]
+    //                 ]
+    //             ]
+    //         ];
+
+    //         $response1 = Http::withHeaders([
+    //             'Content-Type' => 'application/json',
+    //             'Accept' => 'application/json',
+    //             'Conversation-ID' => '2021.01.DevStudio',
+    //             'Authorization' => 'Bearer T1RLAQJURmHUsZcBVc6sfL5m6rvgICNgRFqSOnkGjGyjEJv6VhCAtMLmy3LcgDdehh7gRKJCAADQzQaV+9RXyzXg+q90UdaD8Gphs6ONRIlT2eCegn6k/1fRoVvigb/G4JwM/ULvec9Ih3EgTs5kvQnhQgE89J8HuLOWwQav9T2cVnz94+uv9qQyb28m6aGv0bH29UIn1jpEquHH2DMaoWHe91MNYR/UlrLK5OXPl8UroCUKaDaTB1enCq+ZoiZBd5ULogHCwjrT9P+qswN5hlZ7blL9QtTBbeKnn58RB2cPMwfT/OffOuZZFQiLenPMixOSLLD2UuKCkypH+6iM7y1tcA5lb48Mmw**'
+    //         ])->post('https://api.platform.sabre.com/v3.0.0/get/hotelavail', $requestData);
+
+    //         if ($response1->successful()) {
+    //             // Extract data from the first response 
+    //             $responseData1 = $response1->json()['GetHotelAvailRS']['HotelAvailInfos']['HotelAvailInfo'];
+
+    //             // Callback function to filter by country code
+    //             function filterByCountryCode($hotel, $countryCode, $cityCode)
+    //             {
+    //                 // Check if the necessary nested values exist and if the country code or city code matches
+    //                 return (
+    //                     (isset($hotel['HotelInfo']['LocationInfo']['Address']['CountryName']['Code']) &&
+    //                         $hotel['HotelInfo']['LocationInfo']['Address']['CountryName']['Code'] === $countryCode) ||
+    //                     (isset($hotel['HotelInfo']['LocationInfo']['Address']['CityName']['CityCode']) &&
+    //                         $hotel['HotelInfo']['LocationInfo']['Address']['CityName']['CityCode'] === $cityCode) ||
+    //                     (isset($hotel['HotelInfo']['HotelName']) &&
+    //                         $hotel['HotelInfo']['HotelName'] === $countryCode)
+    //                 );
+    //             }
+
+    //             $filteredHotels = array_filter($responseData1, function ($hotel) use ($countryCode, $cityCode) {
+    //                 return filterByCountryCode($hotel, $countryCode, $cityCode);
+    //             });
+    //             // Make the second Api GET request 
+    //             $response2 = Http::timeout(5)->withHeaders([
+    //                 'Authorization' => 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL2hvdGVsLmFvdHJlay5uZXQvYXBpL2F1dGgvbG9naW4iLCJpYXQiOjE3MjQwNTM5OTYsImV4cCI6MTcyNDA4OTk5NiwibmJmIjoxNzI0MDUzOTk2LCJqdGkiOiJjSjhrNTcwSldLeng0NWlrIiwic3ViIjoiMSIsInBydiI6IjIzYmQ1Yzg5NDlmNjAwYWRiMzllNzAxYzQwMDg3MmRiN2E1OTc2ZjcifQ.6-uisxhgg11bsxrQhlDPaYkxDmL3xC_0KXuKiTiUVuA',
+    //             ])->get('https://hotel.aotrek.net/api/auth/manage-product');
+
+    //             if ($response2->successful()) {
+    //                 $responseData2 = $response2->json();
+
+    //                 function filterByCountry($hotel, $countryCode, $cityCode)
+    //                 {
+    //                     if (isset($hotel['country']) && $hotel['country'] === $countryCode) {
+    //                         return true;
+    //                     }
+    //                     if (isset($hotel['cities']) && is_array($hotel['cities'])) {
+    //                         foreach ($hotel['cities'] as $city) {
+    //                             if (isset($city['city']) && $city['city'] === $cityCode) {
+    //                                 return true;
+    //                             }
+    //                         }
+    //                     }
+
+    //                     //  if (isset($hotel['hotels']) && is_array($hotel['hotels'])) {
+    //                     //     foreach ($hotel['hotels'] as $hotel) {
+    //                     //         if (isset($hotel['hotel']) && $hotel['hotel'] === $countryCode) {
+    //                     //             return true;
+    //                     //         }
+    //                     //     }
+    //                     // }
+
+    //                     return false;
+    //                 }
+    //                 // Filter the array with the given country code
+    //                 $filteredHotels1 = array_filter($responseData2, function ($hotel) use ($countryCode, $cityCode) {
+    //                     return filterByCountry($hotel, $countryCode, $cityCode);
+    //                 });
+
+    //                 // Combine or manipulate data from both responses as needed
+    //                 $combinedData = [
+    //                     'filtered_hotels' => $filteredHotels,
+    //                     'second_response_data' => $filteredHotels1,
+    //                 ];
+
+    //                 // Return the combined data in the JSON response
+    //                 return response()->json($combinedData);
+    //             } else {
+    //                 return response()->json(['message' => 'Error fetching data from second external API'], $response2->status());
+    //             }
+    //         } else {
+    //             return response()->json(['message' => 'Error fetching data from first external API'], $response1->status());
+    //         }
+    //     } catch (\Exception $error) {
+    //         // Handle exceptions
+    //         return response()->json(['message' => 'Error fetching data from external API'], 500);
+    //     }
+    // }
+    
+    
+ public function apisearch(Request $request)
+{
+   try {
+       
+         // Prepare the request data
+           $countryCode = $request->input('countryCode');
+          $cityCode = $request->input('cityCode');
+        // Prepare the headers
+        $headers = [
+            'Content-Type' => 'application/json',
+            'Accept' => 'application/json',
+            'Conversation-ID' => '2021.01.DevStudio',
+            'Authorization' => 'Bearer T1RLAQKrKMUOeaJvQtROx99DICypr9d6CCZWdjjLhRdRYcE9WRD5s5dEI/rK2qwGIpZfNqWaAADQlXf47lm7vKL2Fv7g4WQuxYlc9Koo7Aeo52w9w9cBbQYQcklJ/whI3i7Ti3nVRuPdwdr5IszkzPxbr+P1W+ujaqwEq4rQDtXeMbx1nIz+hwnefuiQ5QYOy9eo3hqIFQCM3I7DAewoBRimhiJ0TUwn74No1y9GzNRxzprO/OfACoD+iydphwjWLGgVTIZT6/Lj7r5iGt/1bjIwHMlhonhIGoGNy/krR4pxjj8K3mEbqO8fB/x3bd58XE1lNIP3iIP6q7l5L7tReYzFHPX0/lhSpg**',
+            'Cookie' => 'incap_ses_33_2768617=5EmMR1z2sRQ98hRLdj11AK4uw2YAAAAAi0swhtsv2zPjkEuHfz/Pqg==; visid_incap_2768617=zD9nbKVcQtOUaPXdT2lI1rvxwmYAAAAAQUIPAAAAAABBnsLiJd3s1EuSmsGJI5Y8',
+        ];
+
+        // Prepare the body
+        $body = [
+            'GetHotelAvailRQ' => [
+                'SearchCriteria' => [
+                    'OffSet' => 1,
+                    'SortBy' => 'TotalRate',
+                    'SortOrder' => 'ASC',
+                    'PageSize' => 20,
+                    'TierLabels' => false,
+                    'GeoSearch' => [
+                        'GeoRef' => [
+                            'Radius' => 20,
+                            'UOM' => 'MI',
+                            'RefPoint' => [
+                                'Value' => 'DFW',
+                                'ValueContext' => 'CODE',
+                                'RefPointType' => '6'
                             ]
-                        ],
-                        'RateInfoRef' => [
-                            'ConvertedRateInfoOnly' => false,
-                            'CurrencyCode' => 'USD',
-                            'BestOnly' => '2',
-                            'PrepaidQualifier' => 'IncludePrepaid',
-                            'StayDateRange' => [
-                                'StartDate' => '2024-06-05',
-                                'EndDate' => '2024-06-08'
-                            ],
-                            'Rooms' => [
-                                'Room' => [
-                                    [
-                                        'Index' => 1,
-                                        'Adults' => 1,
-                                        'Children' => 0
-                                    ]
-                                ]
-                            ],
-                            'InfoSource' => '100,110,112,113'
-                        ],
-                        'HotelPref' => [
-                            'SabreRating' => [
-                                'Min' => '3',
-                                'Max' => '5'
-                            ]
-                        ],
-                        'ImageRef' => [
-                            'Type' => 'MEDIUM',
-                            'LanguageCode' => 'EN'
                         ]
+                    ],
+                    'RateInfoRef' => [
+                        'ConvertedRateInfoOnly' => false,
+                        'CurrencyCode' => 'USD',
+                        'BestOnly' => '2',
+                        'PrepaidQualifier' => 'IncludePrepaid',
+                        'StayDateRange' => [
+                            'StartDate' => '2024-09-18',
+                            'EndDate' => '2024-09-21'
+                        ],
+                        'Rooms' => [
+                            'Room' => [
+                                [
+                                    'Index' => 1,
+                                    'Adults' => 1,
+                                    'Children' => 0
+                                ]
+                            ]
+                        ],
+                        'InfoSource' => '100,110,112,113'
+                    ],
+                    'HotelPref' => [
+                        'SabreRating' => [
+                            'Min' => '3',
+                            'Max' => '5'
+                        ]
+                    ],
+                    'ImageRef' => [
+                        'Type' => 'MEDIUM',
+                        'LanguageCode' => 'EN'
                     ]
                 ]
-            ];
+            ]
+        ];
+ 
+        // Make the request
+        $response1 = Http::withHeaders($headers)
+                        ->post('https://api.platform.sabre.com/v3.0.0/get/hotelavail', $body);
 
-            $response1 = Http::withHeaders([
-                'Content-Type' => 'application/json',
-                'Accept' => 'application/json',
-                'Conversation-ID' => '2021.01.DevStudio',
-                'Authorization' => 'Bearer T1RLAQLmEMoHOYBgpmbYgnejyIwPuNTSwcYh7fNPhtPk6+ZAVxA+FTGydgp6+HYSLhf3/ggYAADQP/bB6p4d0XrwXT25DB49bymNY5N8+Mibv+z2MBe3F1CP+9sOaqZgwUII4nGbYErTLHEPfBf0BEKVYdznHQl0tEdEWE7qZfu2Y+/dzFJKM3KtqbkBuid/vkfox6lDcOYuI9wWOsZhOtnEEEJQW68lJm+NJXDiGUK+OMTfIdMD3dMFMzb+q2Y64EzVg37e+2iW6a/8Br9f/eaWqY5rf814quAautxFHKlmkoLxcgOFW9CoQ8XRKCzie4lwD31vowex8+smJYKAdkribpvJnpugBA**'
-            ])->post('https://api.cert.platform.sabre.com/v3.0.0/get/hotelavail', $requestData);
+        if ($response1->successful()) {
+            // Extract data from the first response
+            $responseData1 = $response1->json();
 
-            if ($response1->successful()) {
-                // Extract data from the first response 
-                $responseData1 = $response1->json()['GetHotelAvailRS']['HotelAvailInfos']['HotelAvailInfo'];
+            // Validate response structure
+            if (!isset($responseData1['GetHotelAvailRS']['HotelAvailInfos']['HotelAvailInfo'])) {
+                Log::error('Unexpected structure in first API response', ['response' => $responseData1]);
+                return response()->json(['message' => 'Unexpected response structure from first external API'], 500);
+            }
 
-                // Callback function to filter by country code
-                function filterByCountryCode($hotel, $countryCode, $cityCode)
-                {
-                    // Check if the necessary nested values exist and if the country code or city code matches
-                    return (
-                        (isset($hotel['HotelInfo']['LocationInfo']['Address']['CountryName']['Code']) &&
-                            $hotel['HotelInfo']['LocationInfo']['Address']['CountryName']['Code'] === $countryCode) ||
-                        (isset($hotel['HotelInfo']['LocationInfo']['Address']['CityName']['CityCode']) &&
-                            $hotel['HotelInfo']['LocationInfo']['Address']['CityName']['CityCode'] === $cityCode) ||
-                        (isset($hotel['HotelInfo']['HotelName']) &&
-                            $hotel['HotelInfo']['HotelName'] === $countryCode)
-                    );
-                }
+            $responseData1 = $responseData1['GetHotelAvailRS']['HotelAvailInfos']['HotelAvailInfo'];
 
-                $filteredHotels = array_filter($responseData1, function ($hotel) use ($countryCode, $cityCode) {
-                    return filterByCountryCode($hotel, $countryCode, $cityCode);
-                });
-                // Make the second Api GET request 
-                $response2 = Http::timeout(5)->withHeaders([
-                    'Authorization' => 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvYXBpL2F1dGgvbG9naW4iLCJpYXQiOjE3MTUwNTgzNjUsImV4cCI6MTcxNTA5NDM2NiwibmJmIjoxNzE1MDU4MzY2LCJqdGkiOiJZd3dnVXk1TVRwRzgwelR5Iiwic3ViIjoiMSIsInBydiI6IjIzYmQ1Yzg5NDlmNjAwYWRiMzllNzAxYzQwMDg3MmRiN2E1OTc2ZjcifQ.KiZV777r3S591z9bPoDvYc2WI4P5IvxJ_avXATEbQGE',
-                ])->get('http://127.0.0.1:8000/api/auth/manage-product');
+            $filteredHotels = array_filter($responseData1, function ($hotel) use ($countryCode, $cityCode) {
+                $countryMatch = isset($hotel['HotelInfo']['LocationInfo']['Address']['CountryName']['Code']) &&
+                                $hotel['HotelInfo']['LocationInfo']['Address']['CountryName']['Code'] === $countryCode;
 
-                if ($response2->successful()) {
-                    $responseData2 = $response2->json();
+                $cityMatch = isset($hotel['HotelInfo']['LocationInfo']['Address']['CityName']['CityCode']) &&
+                             $hotel['HotelInfo']['LocationInfo']['Address']['CityName']['CityCode'] === $cityCode;
 
-                    function filterByCountry($hotel, $countryCode, $cityCode)
-                    {
-                        if (isset($hotel['country']) && $hotel['country'] === $countryCode) {
-                            return true;
-                        }
-                        if (isset($hotel['cities']) && is_array($hotel['cities'])) {
-                            foreach ($hotel['cities'] as $city) {
-                                if (isset($city['city']) && $city['city'] === $cityCode) {
-                                    return true;
-                                }
+                return $countryMatch || $cityMatch;
+            });
+
+            // Second API request
+            $response2 = Http::timeout(5)->withHeaders([
+                'Authorization' => 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL2hvdGVsLmFvdHJlay5uZXQvYXBpL2F1dGgvbG9naW4iLCJpYXQiOjE3MjQwNjc4NDYsImV4cCI6MTcyNDEwMzg0NiwibmJmIjoxNzI0MDY3ODQ2LCJqdGkiOiJCMHZIb2U2a1RzdHFBZlJXIiwic3ViIjoiMSIsInBydiI6IjIzYmQ1Yzg5NDlmNjAwYWRiMzllNzAxYzQwMDg3MmRiN2E1OTc2ZjcifQ._h8JUpqlyvLb0MOw3ypqoFdj5buhJKuTQadXx07t6iU'
+            ])->get('https://hotel.aotrek.net/api/auth/manage-product');
+
+            if ($response2->successful()) {
+                $responseData2 = $response2->json();
+
+                // Filter hotels from the second API
+                $filteredHotels1 = array_filter($responseData2, function ($hotel) use ($countryCode, $cityCode) {
+                    if (isset($hotel['country']) && $hotel['country'] === $countryCode) {
+                        return true;
+                    }
+                    if (isset($hotel['cities']) && is_array($hotel['cities'])) {
+                        foreach ($hotel['cities'] as $city) {
+                            if (isset($city['city']) && $city['city'] === $cityCode) {
+                                return true;
                             }
                         }
-
-                        //  if (isset($hotel['hotels']) && is_array($hotel['hotels'])) {
-                        //     foreach ($hotel['hotels'] as $hotel) {
-                        //         if (isset($hotel['hotel']) && $hotel['hotel'] === $countryCode) {
-                        //             return true;
-                        //         }
-                        //     }
-                        // }
-
-                        return false;
                     }
-                    // Filter the array with the given country code
-                    $filteredHotels1 = array_filter($responseData2, function ($hotel) use ($countryCode, $cityCode) {
-                        return filterByCountry($hotel, $countryCode, $cityCode);
-                    });
+                    return false;
+                });
 
-                    // Combine or manipulate data from both responses as needed
+                $response3 = Http::get('https://jsonplaceholder.typicode.com/posts');
+
+                if ($response3->successful()) {
+                    $responseData3 = $response3->json();
+
+                    // Combine or manipulate data from all responses as needed
                     $combinedData = [
-                        'filtered_hotels' => $filteredHotels,
-                        'second_response_data' => $filteredHotels1,
+                        'filtered_hotels_first_api' => $filteredHotels,
+                        'filtered_hotels_second_api' => $filteredHotels1,
+                        'json_placeholder_data' => $responseData3
                     ];
 
-                    // Return the combined data in the JSON response
                     return response()->json($combinedData);
                 } else {
-                    return response()->json(['message' => 'Error fetching data from second external API'], $response2->status());
+                    Log::error('JSONPlaceholder API request failed', [
+                        'status' => $response3->status(),
+                        'body' => $response3->body()
+                    ]);
+                    return response()->json(['message' => 'Error fetching data from JSONPlaceholder API'], $response3->status());
                 }
             } else {
-                return response()->json(['message' => 'Error fetching data from first external API'], $response1->status());
+                Log::error('Second API request failed', [
+                    'status' => $response2->status(),
+                    'body' => $response2->body()
+                ]);
+                return response()->json(['message' => 'Error fetching data from second external API'], $response2->status());
             }
-        } catch (\Exception $error) {
-            // Handle exceptions
-            return response()->json(['message' => 'Error fetching data from external API'], 500);
+        } else {
+            Log::error('First API request failed', [
+                'status' => $response1->status(),
+                'body' => $response1->body()
+            ]);
+            return response()->json(['message' => 'Error fetching data from first external API'], $response1->status());
         }
+    } catch (\Exception $error) {
+        Log::error('Exception occurred', ['message' => $error->getMessage(), 'trace' => $error->getTraceAsString()]);
+
+
+
+
     }
+}
 
     public function newlogin(Request $request)
     {

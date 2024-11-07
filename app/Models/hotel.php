@@ -19,7 +19,6 @@ class hotel extends Model
         'landmark',
         'rating',
         'Single_image',
-        'multiple_image',
         'address',
         'highlights',
         'long_decription',

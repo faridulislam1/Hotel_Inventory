@@ -13,7 +13,9 @@
         "laravel/sanctum": "^3.0",
         "laravel/tinker": "^2.7",
         "livewire/livewire": "^2.11",
-        "php-open-source-saver/jwt-auth": "^2.1"
+        "php-open-source-saver/jwt-auth": "^2.1",
+        "predis/predis": "^2.2",
+        "weidner/goutte": "^2.3"
     },
     "require-dev": {
         "fakerphp/faker": "^1.9.1",

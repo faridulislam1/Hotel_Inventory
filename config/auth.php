@@ -47,6 +47,12 @@ return [
              'ttl' => 28800,
         ],
         
+
+        'scantum' => [
+        'driver' => 'jwt',
+        'provider' => 'users',
+    ],
+
     ],
 
     /*

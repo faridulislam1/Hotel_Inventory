@@ -6,6 +6,7 @@ use App\Http\Controllers\HotelController;
 use App\Http\Controllers\RoomController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\TitleController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -16,6 +17,9 @@ Route::middleware([
     config('jetstream.auth_session'),
     'verified'
 ])->group(function () {
+
+    
+
 
     Route::get('/dashboard',[DashboardController::class,'index'])->name('dashboard');
 
@@ -68,7 +72,7 @@ Route::middleware([
 //    Route::post('/new-room',[RoomController::class,'saveroom'])->name('new.room');
 //    Route::get('/manage-room',[RoomController::class,'manageProduct'])->name('manage.room');
 
- 
+     Route::get('/scraper',action: [TitleController::class,'scraper'])->name('scraper');
 
 
 

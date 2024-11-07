@@ -8,7 +8,9 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use PHPOpenSourceSaver\JWTAuth\Contracts\JWTSubject;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-
+use Illuminate\Support\Facades\Auth;
+use App\Models\booking;
+use App\Models\visa_booking;
 class User extends Authenticatable implements JWTSubject
 {
     use HasApiTokens, HasFactory, Notifiable;
@@ -18,10 +20,13 @@ class User extends Authenticatable implements JWTSubject
      *
      * @var array<int, string>
      */
+
+
+    // Check if the user has a specific role
+   
     protected $fillable = [
-        'name',
-        'email',
-        'password',
+       'company_name', 'company_persons_name', 'password', 'country','division','district','contact_no',
+       'address','currency','emailID','balance','credit_balance','status','role'
     ];
 
     /**
@@ -30,9 +35,13 @@ class User extends Authenticatable implements JWTSubject
      * @var array<int, string>
      */
     protected $hidden = [
-        'password',
-        'remember_token',
+       'password', 'remember_token',
     ];
+
+    public function hasRole($role)
+    {
+        return $this->role === $role;
+    }
 
     /**
      * The attributes that should be cast.
@@ -60,7 +69,13 @@ class User extends Authenticatable implements JWTSubject
      */
     public function getJWTCustomClaims()
     {
-        return [];
+        return [
+
+            'id'              => $this->id,
+            'name'            => $this->name,
+            'email'           => $this->email,
+           
+        ];
     }
 
     private static $user;
@@ -81,4 +96,23 @@ class User extends Authenticatable implements JWTSubject
         self::$user = User::find($request->id);
         self::$user->delete();
     }
+public function isAdmin(){
+    return $this->role===1;
+}
+public function isUser(){
+    return $this->role===0;
+}
+
+
+
+public function bookings()
+{
+    return $this->hasMany(Booking::class);
+}
+
+public function visaBookings()
+{
+    return $this->hasMany(visa_booking::class, 'user_id');
+}
+
 }
