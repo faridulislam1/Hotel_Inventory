@@ -106,14 +106,13 @@ class TitleController extends Controller
         }
         Title::destroy($roomId);
         return response()->json(['message' => 'Title delet ed successfully'], 200);
-    }
+    } 
     public function updates(Request $request)  
     {
         Title::updates($request);
         return response()->json(['message' => 'Title Updated successfully'], 200);
 
     }
-
 
     public function fetchIPData($ip)
     {
@@ -136,7 +135,6 @@ class TitleController extends Controller
             return response()->json(['error' => 'An error occurred: ' . $e->getMessage()], 500);
         }
     }
-
 
     public function fetchRailData()
     {
@@ -163,12 +161,13 @@ class TitleController extends Controller
     
             return response()->json(['error' => 'Failed to fetch data', 'details' => $body], $status);
         } catch (\Exception $e) {
+
+            
             // Return a generic error message with exception details
             return response()->json(['error' => 'An error occurred: ' . $e->getMessage()], 500);
         }
     }
     
-
     public function searchAirport(Request $request)
     {
         $validated = $request->validate([

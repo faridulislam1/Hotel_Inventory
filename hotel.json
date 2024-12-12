@@ -1,0 +1,104 @@
+{
+    "country": "BD",
+    "cities": [
+        {
+            "city": "Dhaka",
+            "hotels": [
+                {
+                    "hotel": "seraton",
+                    "embed_code": "234",
+                    "landmark": "7 Raffles Boulevard, Marina Square, Marina Bay, 039595 Singapore, Singapore –",
+                    "rating": "option3",
+                    "Single_image": "upload/product-images/1724055813_336889831 - Copy.jpg",
+                    "multiple_image": "a:2:{i:0;s:38:\"upload/product-other-images/227367.jpg\";i:1;s:38:\"upload/product-other-images/118904.jpg\";}",
+                    "address": "Tempore in non in v",
+                    "highlights": "good",
+                    "long_decription": "good",
+                    "currency": "BDT (Bangladesh)",
+                    "term_condition": "good",
+                    "longitude": "Dolores ipsam elit",
+                    "litetitude": "Voluptatum nisi est",
+                    "facilities": "Swimming Pool,Non-Smoking Rooms,Family Rooms,24-Hour Front Desk",
+                    "rooms": [
+                        {
+                            "room_num": "In aliquip pariatur",
+                            "category": "A",
+                            "quantity": 63,
+                            "bookfor_ota": 28,
+                            "bookfor_hotel":35,
+                            "available_capacity": "4",
+                            "max_capacity": "93",
+                            "refundable": "4",
+                            "non_refundable": "53",
+                            "refundable_break": "76",
+                            "refundable_nonbreak": "35",
+                            "extra_bed": "2",
+                            "room_size": "13",
+                            "bed_type": "King Bed,Queen Bed",
+                            "cancellation_policy": "Eum mollitia iure mi",
+                            "room_available": "19",
+                            "room_facilities": "Air Conditioning,Private Kitchenette,Pool View,Landmark View,Private Kitchen,Free Toiletries,Private Bathroom,Bath,Balcony,Telephone"
+                        },
+                        {
+                            "room_num": "Minim nihil voluptas",
+                            "category": "B",
+                            "quantity": 100,
+                             "bookfor_ota": 60,
+                            "bookfor_hotel":40,
+                            "available_capacity": "47",
+                            "max_capacity": "9",
+                            "refundable": "45",
+                            "non_refundable": "65",
+                            "refundable_break": "98",
+                            "refundable_nonbreak": "88",
+                            "extra_bed": "2",
+                            "room_size": "95",
+                            "bed_type": "Queen Bed",
+                            "cancellation_policy": "Maiores rerum dolore",
+                            "room_available": "63",
+                            "room_facilities": "City View,En-suite Bathroom,Soundproofing,Minibar,Free Wi-Fi,Private Suite,Private Kitchen,Free Toiletries,Private Bathroom,Bath,Coffee Machine,Telephone"
+                        },
+                        {
+                            "room_num": "Minim nihil voluptas",
+                            "category": "C",
+                            "quantity": 50,
+                             "bookfor_ota": 10,
+                            "bookfor_hotel":40,
+                            "available_capacity": "47",
+                            "max_capacity": "9",
+                            "refundable": "45",
+                            "non_refundable": "65",
+                            "refundable_break": "98",
+                            "refundable_nonbreak": "88",
+                            "extra_bed": "2",
+                            "room_size": "95",
+                            "bed_type": "Queen Bed",
+                            "cancellation_policy": "Maiores rerum dolore",
+                            "room_available": "63",
+                            "room_facilities": "City View,En-suite Bathroom,Soundproofing,Minibar,Free Wi-Fi,Private Suite,Private Kitchen,Free Toiletries,Private Bathroom,Bath,Coffee Machine,Telephone"
+                        },
+                        {
+                            "room_num": "Minim nihil voluptas",
+                            "category": "D",
+                            "quantity": 20,
+                             "bookfor_ota": 30,
+                            "bookfor_hotel":40,
+                            "available_capacity": "47",
+                            "max_capacity": "9",
+                            "refundable": "45",
+                            "non_refundable": "65",
+                            "refundable_break": "98",
+                            "refundable_nonbreak": "88",
+                            "extra_bed": "2",
+                            "room_size": "95",
+                            "bed_type": "Queen Bed",
+                            "cancellation_policy": "Maiores rerum dolore",
+                            "room_available": "63",
+                            "room_facilities": "City View,En-suite Bathroom,Soundproofing,Minibar,Free Wi-Fi,Private Suite,Private Kitchen,Free Toiletries,Private Bathroom,Bath,Coffee Machine,Telephone"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

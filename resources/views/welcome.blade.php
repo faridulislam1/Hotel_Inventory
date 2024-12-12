@@ -1,106 +1,142 @@
-<!doctype html>
-<html lang="en" class="minimal-theme">
+<!DOCTYPE html>
+<html lang="en">
+
+
 <head>
-    <!-- Required meta tags -->
     <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <!-- Tell the browser to be responsive to screen width -->
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="icon" href="{{ asset('admin-asset') }}/assets/images/favicon-32x32.png" type="image/png" />
-    <!-- Bootstrap CSS -->
-    <link href="{{ asset('admin-asset') }}/assets/css/bootstrap.min.css" rel="stylesheet" />
-    <link href="{{ asset('admin-asset') }}/assets/css/bootstrap-extended.css" rel="stylesheet" />
-    <link href="{{ asset('admin-asset') }}/assets/css/style.css" rel="stylesheet" />
-    <link href="{{ asset('admin-asset') }}/assets/css/icons.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&amp;display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="../../../../../cdn.jsdelivr.net/npm/bootstrap-icons%401.5.0/font/bootstrap-icons.css">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <!-- Favicon icon -->
+    <link rel="icon" type="image/png" sizes="16x16" href="{{asset('/')}}admin/assets/images/favicon.png">
+    <title> Admin Dashboard</title>
 
-    <!-- loader-->
-    <link href="{{ asset('admin-asset') }}/assets/css/pace.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <!-- page css -->
+    <link href="{{asset('/')}}admin/dist/css/pages/login-register-lock.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link href="{{asset('/')}}admin/dist/css/style.min.css" rel="stylesheet">
 
-    <title>Login-Page</title>
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
 </head>
 
-<body>
-
-
-<!--start wrapper-->
-<div class="wrapper">
-
-    <!--start content-->
-    <main class="authentication-content">
-        <div class="container-fluid">
-            <div class="authentication-card">
-                <div class="card shadow rounded-0 overflow-hidden">
-                    <div class="row g-0">
-                        <div class="col-lg-6 bg-login d-flex align-items-center justify-content-center">
-                            <img src="{{ asset('admin-asset') }}/assets/images/error/login-img.jpg" class="img-fluid" alt="">
-                        </div>
-                        <div class="col-lg-6">
-                            <div class="card-body p-4 p-sm-5">
-                                <h5 class="card-title">Sign In</h5>
-                                <p class="card-text mb-5">See your growth and get consulting support!</p>
-                                <form class="form-body" method="POST" action="{{ route('login') }}">
-                                    @csrf
-                                    <div class="d-grid">
-                                        <a class="btn btn-white radius-30" href="javascript:;"><span class="d-flex justify-content-center align-items-center">
-                            <img class="me-2" src="{{ asset('admin-asset') }}/assets/images/icons/search.svg" width="16" alt="">
-                            <span>Sign in with Google</span>
-                          </span>
-                                        </a>
-                                    </div>
-                                    <div class="login-separater text-center mb-4"> <span>OR SIGN IN WITH EMAIL</span>
-                                        <hr>
-                                    </div>
-                                    <div class="row g-3">
-                                        <div class="col-12">
-                                            <label for="inputEmailAddress" class="form-label">Email Address</label>
-                                            <div class="ms-auto position-relative">
-                                                <div class="position-absolute top-50 translate-middle-y search-icon px-3"><i class="bi bi-envelope-fill"></i></div>
-                                                <input type="email" name="email" class="form-control radius-30 ps-5" id="inputEmailAddress" placeholder="Email Address">
-                                            </div>
-                                        </div>
-                                        <div class="col-12">
-                                            <label for="inputChoosePassword" class="form-label">Enter Password</label>
-                                            <div class="ms-auto position-relative">
-                                                <div class="position-absolute top-50 translate-middle-y search-icon px-3"><i class="bi bi-lock-fill"></i></div>
-                                                <input type="password" name="password" class="form-control radius-30 ps-5" id="inputChoosePassword" placeholder="Enter Password">
-                                            </div>
-                                        </div>
-                                        <div class="col-6">
-                                            <div class="form-check form-switch">
-                                                <input class="form-check-input" type="checkbox" id="flexSwitchCheckChecked" checked="">
-                                                <label class="form-check-label" for="flexSwitchCheckChecked">Remember Me</label>
-                                            </div>
-                                        </div>
-                                        <div class="col-6 text-end">	<a href="authentication-forgot-password.html">Forgot Password ?</a>
-                                        </div>
-                                        <div class="col-12">
-                                            <div class="d-grid">
-                                                <button type="submit" class="btn btn-primary radius-30">Sign In</button>
-                                            </div>
-                                        </div>
-                                        <div class="col-12">
-                                            <p class="mb-0">Don't have an account yet? <a href="authentication-signup.html">Sign up here</a></p>
-                                        </div>
-                                    </div>
-                                </form>
+<body class="skin-default card-no-border">
+<!-- ============================================================== -->
+<!-- Preloader - style you can find in spinners.css -->
+<!-- ============================================================== -->
+<div class="preloader">
+    <div class="loader">
+        <div class="loader__figure"></div>
+        <p class="loader__label">Elite admin</p>
+    </div>
+</div>
+<!-- ============================================================== -->
+<!-- Main wrapper - style you can find in pages.scss -->
+<!-- ============================================================== -->
+<section id="wrapper">
+    <div class="login-register" style="background-image:url({{asset('/')}}admin/assets/images/background/login-register.jpg);">
+        <div class="login-box card">
+            <div class="card-body">
+                <form class="form-horizontal form-material"  action="{{route('login')}}" method="POST">
+                    @csrf
+                    <h3 class="text-center m-b-20">Sign In</h3>
+                    <div class="form-group ">
+                        <div class="col-xs-12">
+                            <input class="form-control" type="email" name="email" required="" placeholder="Email"> </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-xs-12">
+                            <input class="form-control" type="password" name="password"  required="" placeholder="Password"> </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-md-12">
+                            <div class="d-flex no-block align-items-center">
+                                <div class="form-check">
+                                    <input type="checkbox" class="form-check-input" id="customCheck1">
+                                    <label class="form-check-label" for="customCheck1">Remember me</label>
+                                </div>
+                                <div class="ms-auto">
+                                    <a href="javascript:void(0)" id="to-recover" class="text-muted"><i class="fas fa-lock m-r-5"></i> Forgot pwd?</a>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
+                    <div class="form-group text-center">
+                        <div class="col-xs-12 p-b-20">
+                            <button class="btn w-100 btn-lg btn-info btn-rounded text-white" type="submit">Log In</button>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-12 col-md-12 m-t-10 text-center">
+                            <div class="social">
+                                <button class="btn  btn-facebook" data-bs-toggle="tooltip" title="Login with Facebook"> <i aria-hidden="true" class="fab fa-facebook-f"></i> </button>
+                                <button class="btn btn-googleplus" data-bs-toggle="tooltip" title="Login with Google"> <i aria-hidden="true" class="fab fa-google-plus-g"></i> </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group m-b-0">
+                        <div class="col-sm-12 text-center">
+                            Don't have an account? <a href="pages-register.html" class="text-info m-l-5"><b>Sign Up</b></a>
+                        </div>
+                    </div>
+                </form>
+                <form class="form-horizontal" id="recoverform" action="http://eliteadmin.themedesigner.in/demos/bt4/eliteadmin/index.html">
+                    <div class="form-group ">
+                        <div class="col-xs-12">
+                            <h3>Recover Password</h3>
+                            <p class="text-muted">Enter your Email and instructions will be sent to you! </p>
+                        </div>
+                    </div>
+                    <div class="form-group ">
+                        <div class="col-xs-12">
+                            <input class="form-control" type="text" required="" placeholder="Email"> </div>
+                    </div>
+                    <div class="form-group text-center m-t-20">
+                        <div class="col-xs-12">
+                            <button class="btn btn-primary btn-lg w-100 text-uppercase waves-effect waves-light" type="submit">Reset</button>
+                        </div>
+                    </div>
+                </form>
             </div>
         </div>
-    </main>
+    </div>
+</section>
 
-    <!--end page main-->
-
-</div>
-<!--end wrapper-->
-
-
-<!--plugins-->
-<script src="{{ asset('admin-asset') }}/assets/js/jquery.min.js"></script>
-<script src="{{ asset('admin-asset') }}/assets/js/pace.min.js"></script>
-
+<!-- ============================================================== -->
+<!-- End Wrapper -->
+<!-- ============================================================== -->
+<!-- ============================================================== -->
+<!-- All Jquery -->
+<!-- ============================================================== -->
+<script src="{{asset('/')}}admin/assets/node_modules/jquery/dist/jquery.min.js"></script>
+<!-- Bootstrap tether Core JavaScript -->
+<script src="{{asset('/')}}admin/assets/node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+<!--Custom JavaScript -->
+<script type="text/javascript">
+    $(function() {
+        $(".preloader").fadeOut();
+    });
+    $(function() {
+        $('[data-bs-toggle="tooltip"]').tooltip()
+    });
+    // ==============================================================
+    // Login and Recover Password
+    // ==============================================================
+    $('#to-recover').on("click", function() {
+        $("#loginform").slideUp();
+        $("#recoverform").fadeIn();
+    });
+</script>
 
 </body>
+
+
 </html>

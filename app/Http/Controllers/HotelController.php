@@ -1,5 +1,7 @@
 <?php
+
 namespace App\Http\Controllers;
+
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use App\Models\Country;
@@ -7,7 +9,6 @@ use App\Models\City;
 use App\Models\room;
 use App\Models\hotel;
 use Illuminate\Support\Facades\Validator;
-use App\Models\otherImage;
 
 class HotelController extends Controller
 {
@@ -25,6 +26,7 @@ class HotelController extends Controller
             ]);
             
         }  
+
         // public function manageProduct()
         // {
         //     $countries = Country::with(['cities.hotels', 'hotels.rooms'])->get();
@@ -34,10 +36,27 @@ class HotelController extends Controller
         public function manageProduct()
 {
     $countries = Country::with(['cities.hotels.rooms'])->get();
-    //return view('admin.product.manage-product', ['products' => hotel::all()]);
-    return response()->json($countries);
+                    
+
+                    // Loop through each country and hide the specified fields
+                    $countries->each(function ($country) { 
+                        $country->makeHidden(['id', 'created_at', 'updated_at']);
+                        $country->cities->each(function ($city) {
+                            $city->makeHidden(['id', 'created_at', 'updated_at', 'country_id', 'city_id']);
+                            $city->hotels->each(function ($hotel) {
+                                $hotel->makeHidden(['id', 'created_at', 'updated_at', 'country_id', 'city_id', 'hotel_id']);
+                                $hotel->rooms->each(function ($room) {
+                                    $room->makeHidden(['id', 'created_at', 'updated_at', 'hotel_id', 'city_id']);
+                                });
+                            });
+                        });
+                    });
+
+                    return response()->json($countries);
 }
            
+
+
         public static function getImageUrl($request)
         {
             $image = $request->file('Single_image');
@@ -76,21 +95,7 @@ class HotelController extends Controller
                 return [];
             }
         }
-
-
-        public static function newOtherImage($images, $id)
-        {
-            foreach($images as $image)
-            {
-                self::$otherImage = new OtherImage();
-                self::$otherImage->product_id   = $id;
-                self::$otherImage->multiple_image        = self::getImageUrl($image);
-                self::$otherImage->save();
-            }
-        }
-    
-
-   public function savehotel(Request $request)
+  public function savehotel(Request $request)
    
 {
     $validator = Validator::make($request->all(), [
@@ -112,6 +117,7 @@ class HotelController extends Controller
     if ($validator->fails()) {
         return back()->withErrors($validator)->withInput();
     }
+
 
     $country = Country::create([
         'country' => $request->country,
@@ -153,48 +159,14 @@ class HotelController extends Controller
 }
 
 
-// OtherImage::newOtherImage($request->other_image, $this->$product->id);
-
-//         $singleImageUrl = self::getImageUrl($request);
-    
-         //$multipleImageUrls = self::newOtherImage($request);
-       
-        // $multipleImageUrls = [];
-        // if ($request->hasFile('other_image')) {
-        //     $multipleImageUrls = $this->newOtherImages($request->file('other_image'));
-        // }
-
-        // // Create Hotel
-        // Hotel::create([
-        //     'hotel' => $request->hotel,
-        //     'city_id' => $city->id,
-        //     'embed_code' => $request->embed_code,
-        //     'landmark' => $request->landmark,
-        //     'rating' => $request->rating,
-        //     'address' => $request->address,
-        //     'highlights' => $request->highlights,
-        //     'long_decription' => $request->long_decription,
-        //     'currency' => $request->currency,
-        //     'term_condition' => $request->term_condition,
-        //     'longitude' => $request->longitude,
-        //     'litetitude' => $request->litetitude,
-        //     'single_image' => $singleImageUrl,
-        //     'multiple_image' => !empty($multipleImageUrls) ? serialize($multipleImageUrls) : null,
-        //     'facilities' => is_array($request->facilities) ? implode(',', $request->facilities) : $request->facilities,
-        // ]);
-
-        // return response()->json(['message' => 'Hotel Data successfully inserted'], 201);
-        // }
-
-
-
-
   public function productEdit($id){
     self::$product=hotel::find($id);
     return view('admin.product.product-edit',[
         'product'=>self::$product
     ]);
 }
+
+
 public static function  Update(Request $request)
 {
     $product = hotel::find($request->id);
@@ -213,26 +185,32 @@ public static function  Update(Request $request)
     $product->term_condition = $request->term_condition;
     $product->longitude = $request->longitude;
     $product->litetitude = $request->litetitude;
-    $product->facilities = $request->fmacilities;
+    $product->facilities = $request->facilities;
 
     if ($request->file('Single_image')) {
         // Delete the existing image file
         if ($product->Single_image && file_exists($product->Single_image)) {
             unlink($product->Single_image);
         }
+
         // Update Single_image with the new file
         $product->Single_image = self::getImageUrl($request, 'Single_image');
     }
+
     $product->save();
+
+
     return response()->json(['message' => 'Hotel updated successfully'], 200);
 } 
 
     public function detail($id)
     {
         $hotel = Hotel::with('rooms')->find($id);
+    
         return view('admin.product.detail', ['hotel' => $hotel]);
     }
-        public function productDelete(Request $request){
+             
+    public function productDelete(Request $request){
         hotel::productDelete($request->id);
         return back()->with('message', 'Info deleted');
 

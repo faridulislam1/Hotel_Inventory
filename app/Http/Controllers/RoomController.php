@@ -63,7 +63,7 @@ class RoomController extends Controller
         
        //$products=itenary::with('city')->get();
          $products=room::all();
-       //return response()->json($products);
+       return response()->json($products);
         //exit();
         return view('admin.country.manage-product',[
             'products'=>room::all()
@@ -72,73 +72,130 @@ class RoomController extends Controller
         //dd($products);
     }
 
-   public function saveroom(Request $request){
- // dd($request);
+//    public function saveroom(Request $request)
+   
+//    {
+//  $validator = Validator::make($request->all(), [ 
+//     'city_id' => 'required',
+//     'room_type' => 'required',
+//     'available_capacity' => 'required',
+//     'max_capacity' => 'required',
+//     'refundable' => 'required',
+//     'non_refundable' => 'required',
+//     'refundable_break' => 'required',
+//     'refundable_nonbreak' => 'required',
+//     'room_size' => 'required',
+//     'cancellation_policy' => 'required',
+//     'room_available' => 'required',
+//     'extra_bed' => 'required',
+//     'room_facilities' => 'required',
+//     'bed_type' => 'required',
+// ]);
+
+// if ($validator->fails()) {
+//     return back()->withErrors($validator)->withInput();
+// }
+//     $extraBedValue = $request->input('extra_bed');
+//     if ($extraBedValue === null || $extraBedValue === '') {
+//         $extraBedValue = 'No';
+//     }
+
+//     $product = (object)[
+//         'id' => $request->room_id,      
+//     ];
+
+//     $roomDetails = [];
+//     $roomNumArray = is_array($request->room_num) ? $request->room_num : [$request->room_num];
+//     $products = count($roomNumArray);
+
+//     for ($i = 0; $i < $products; $i++) {
+//         $roomDetails[] = [
+//             // 'room_id' => $product->id,
+//             // 'country_id' => $request->country_id,
+//             //'hotel_id' => $hotel->hotel_id,
+//             'hotel_id' => $request->hotel_id,            
+//             'city_id' => $request->city_id,            
+//             'room_type' => isset($roomNumArray[$i]) ? $roomNumArray[$i] : null,
+//             'available_capacity' => $request->available_capacity[$i],
+//             'max_capacity' => $request->max_capacity[$i],
+//             'refundable' => $request->refundable[$i],
+//             'non_refundable' => $request->non_refundable[$i],
+//             'refundable_break' => $request->refundable_break[$i],
+//             'refundable_nonbreak' => $request->refundable_nonbreak[$i],
+//             'room_size' => $request->room_size[$i],
+//             'cancellation_policy' => $request->cancellation_policy[$i],
+//             'room_available' => $request->room_available[$i],
+//             'extra_bed' => $request->extra_bed[$i],
+//             'room_facilities' => is_array($request->room_facilities) ? implode(',', $request->room_facilities) : $request->room_facilities[$i],
+//             'bed_type' => is_array($request->bed_type) ? implode(',', $request->bed_type) : ($request->bed_type[$i] ?? null),
+       
+//             // 'room_facilities' => is_array($request->room_facilities[$i]) ? implode(',', $request->room_facilities[$i]) : $request->room_facilities[$i],
+//             // 'bed_type' => is_array($request->bed_type[$i]) ? implode(',', $request->bed_type[$i]) : $request->bed_type[$i],
+//         ];
+//     }
+
+//     room::insert($roomDetails);
+
+//     return back();
+// }
 
 
- $validator = Validator::make($request->all(), [ 
-    'city_id' => 'required',
-    'room_num' => 'required',
-    'available_capacity' => 'required',
-    'max_capacity' => 'required',
-    'refundable' => 'required',
-    'non_refundable' => 'required',
-    'refundable_break' => 'required',
-    'refundable_nonbreak' => 'required',
-    'room_size' => 'required',
-    'cancellation_policy' => 'required',
-    'room_available' => 'required',
-    'extra_bed' => 'required',
-    'room_facilities' => 'required',
-    'bed_type' => 'required',
-]);
 
-if ($validator->fails()) {
-    return back()->withErrors($validator)->withInput();
-}
+
+public function saveroom(Request $request)
+{
+    
+    $validatedData = $request->validate([
+        'total_rooms' => 'required|array',
+        'allocated_online_inventory' => 'required|array',
+        'allocated_offline_inventory' => 'required|array',
+        'available_capacity' => 'required|array',
+        'max_capacity' => 'required|array',
+    ]);
+
     $extraBedValue = $request->input('extra_bed');
     if ($extraBedValue === null || $extraBedValue === '') {
         $extraBedValue = 'No';
     }
 
     $product = (object)[
-        'id' => $request->room_id,      
+        'id' => $request->room_id,
     ];
 
+
     $roomDetails = [];
-    $roomNumArray = is_array($request->room_num) ? $request->room_num : [$request->room_num];
+
+    $roomNumArray = is_array($request->room_type) ? $request->room_type : [$request->room_type];
     $products = count($roomNumArray);
 
     for ($i = 0; $i < $products; $i++) {
         $roomDetails[] = [
-            // 'room_id' => $product->id,
-            // 'country_id' => $request->country_id,
-            //'hotel_id' => $hotel->hotel_id,
-            'hotel_id' => $request->hotel_id,            
-            'city_id' => $request->city_id,            
-            'room_num' => isset($roomNumArray[$i]) ? $roomNumArray[$i] : null,
-            'available_capacity' => $request->available_capacity[$i],
-            'max_capacity' => $request->max_capacity[$i],
-            'refundable' => $request->refundable[$i],
-            'non_refundable' => $request->non_refundable[$i],
-            'refundable_break' => $request->refundable_break[$i],
-            'refundable_nonbreak' => $request->refundable_nonbreak[$i],
-            'room_size' => $request->room_size[$i],
-            'cancellation_policy' => $request->cancellation_policy[$i],
-            'room_available' => $request->room_available[$i],
-            'extra_bed' => $request->extra_bed[$i],
-            'room_facilities' => is_array($request->room_facilities) ? implode(',', $request->room_facilities) : $request->room_facilities[$i],
+            'hotel_id' => $request->hotel_id,
+            'city_id' => $request->city_id,
+            'room_type' => isset($roomNumArray[$i]) ? $roomNumArray[$i] : null,
+            'available_capacity' => $request->available_capacity[$i] ?? null,
+            'max_capacity' => $request->max_capacity[$i] ?? null,
+            'refundable' => $request->refundable[$i] ?? null,
+            'non_refundable' => $request->non_refundable[$i] ?? null,
+            'refundable_break' => $request->refundable_break[$i] ?? null,
+            'refundable_nonbreak' => $request->refundable_nonbreak[$i] ?? null,
+            'room_size' => $request->room_size[$i] ?? null,
+            'room_available' => $request->room_available[$i] ?? null,
+            'total_rooms' => $request->total_rooms[$i] ?? null,
+            'allocated_online_inventory' => $request->allocated_online_inventory[$i] ?? null,
+            'allocated_offline_inventory' => $request->allocated_offline_inventory[$i] ?? null,
+            'cancellation_policy' => $request->cancellation_policy[$i] ?? null,
+            'extra_bed' => is_array($request->extra_bed) ? implode(',', $request->extra_bed) : ($request->extra_bed[$i] ?? null),
+            'room_facilities' => is_array($request->room_facilities) ? implode(',', $request->room_facilities) : ($request->room_facilities[$i] ?? null),
             'bed_type' => is_array($request->bed_type) ? implode(',', $request->bed_type) : ($request->bed_type[$i] ?? null),
-       
-            // 'room_facilities' => is_array($request->room_facilities[$i]) ? implode(',', $request->room_facilities[$i]) : $request->room_facilities[$i],
-            // 'bed_type' => is_array($request->bed_type[$i]) ? implode(',', $request->bed_type[$i]) : $request->bed_type[$i],
         ];
     }
-
+    
     room::insert($roomDetails);
 
-    return back();
+    return response()->json(['message' => 'Room Data successfully inserted'], 201);
 }
+
 public function  roomEdit($id){
     self::$product=room::find($id);
     return view('admin.country.product-edit',[

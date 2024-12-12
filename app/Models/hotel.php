@@ -25,6 +25,8 @@ class hotel extends Model
         'currency',
         'term_condition',
         'longitude',
+        'Single_image',
+        'multiple_image',
         'litetitude',
         'facilities'
 

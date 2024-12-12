@@ -28,7 +28,7 @@ class CountriesController extends Controller
         });
         return response()->json($formattedCountries);
     }
-
+ 
 }
 
 

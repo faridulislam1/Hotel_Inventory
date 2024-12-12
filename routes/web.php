@@ -61,7 +61,7 @@ Route::middleware([
     //     Route::post('register', 'register');
     //     Route::post('logout', 'logout');
     //     Route::post('refresh', 'refresh');
-
+ 
     // });
     // Route::get('/login',[AuthController::class,'login'])->name('login');
     // Route::get('/register',[AuthController::class,'register'])->name('register');
@@ -75,3 +75,6 @@ Route::middleware([
 
 
 });
+
+
+

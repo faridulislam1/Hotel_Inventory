@@ -707,7 +707,7 @@ class  BookingController extends Controller
         $passengerData = [
             'passenger' => [
                 'adult' => $adults,
-                'infant' => $infants,
+                'infant' => $infants,  
                 'children' => $children
             ]
         ];
@@ -786,7 +786,7 @@ class  BookingController extends Controller
             'subID' => $booking->subID,
             'passenger' => [
                 'adult' => $booking->passengers->where('type', 'adult')->values(),
-                'infant' => $booking->passengers->where('type', 'infant')->values(),
+                ' ' => $booking->passengers->where('type', 'infant')->values(),
                 'children' => $booking->passengers->where('type', 'children')->values(),
             ],
         ];
@@ -816,17 +816,15 @@ public function sendOtp(Request $request)
 // Method to verify OTP
 public function verifyOtp(Request $request)
 {
-    $request->validate(['otp' => 'required|numeric']);
+    $request->validate(['otp' => 'required|numeric']);  
 
     if (Session::get('otp') == $request->otp) {
-        // OTP is correct, redirect to password reset page or show reset form
-        Session::forget('otp'); // Clear OTP from session after verification
+        Session::forget('otp'); 
         return response()->json(['message' => 'OTP verified. You may now reset your password.'], 200);
     } else {
-        return response()->json(['message' => 'Invalid OTP. Please try again.'], 400);
+        return response()->json(['mesage' => 'Invalid OTP. Please try again.'], 400);
     }
 }
-
 
    public function fetchIPData($ip)
     {
@@ -834,8 +832,8 @@ public function verifyOtp(Request $request)
         $url = "https://api.ip2location.io/?key=$apiKey&ip=$ip";
 
         try {
-           
-            $response = Http::get($url);
+
+          $response = Http::get($url); 
 
             if ($response->successful()) { 
                 $data = $response->json();

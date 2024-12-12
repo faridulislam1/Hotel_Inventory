@@ -24,6 +24,11 @@
                                     <td>{{ $i++ }}</td>
                                     <td>{{ $user->name }}</td>
                                     <td>{{ $user->email }}</td>
+                                    <!-- <td>{{ $user->address}}</td> -->
+                                    <!-- <td>{{ $user->address}}</td> -->
+                                    <!-- <td>{{ $user->address}}</td> -->
+                                    <!-- <td>{{ $user->address}}</td> -->
+                                    <!-- <td>{{ $user->address}}</td> -->
                                     <td class="btn-group">
                                         <a href="{{ route('user.edit',['id'=>$user->id]) }}" class="btn btn-primary btn-sm mx-1">Edit</a>
                                         <form action="{{ route('user.delete') }}" method="post" >

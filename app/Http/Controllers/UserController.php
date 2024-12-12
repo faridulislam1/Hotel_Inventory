@@ -16,6 +16,7 @@ class UserController extends Controller
         User::saveUser($request);
         return back();  
     } 
+    
     public function manageUser(){
         return view('admin.user.manage-user',[
             'users'=>User::all()

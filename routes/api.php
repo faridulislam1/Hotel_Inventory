@@ -71,9 +71,6 @@ Route::post('/fetchRailData', [TitleController::class, 'fetchRailData']);
 //search Air Api
 
 Route::get('/search-airport', [TitleController::class, 'searchAirport']);
-
-
-
 // In routes/api.php
 Route::post('/forgot-password', [TitleController::class, 'sendOtp'])->name('password.otp.send');
 Route::post('/verify-otp', [TitleController::class, 'verifyOtp'])->name('password.otp.verify');
@@ -137,7 +134,7 @@ Route::put('/update/{id}',[TitleController::class,'updates'])->name('category.up
     //room info
     Route::get('/add-itenary', [AuthController::class, 'storeroom'])->name('store.itenary');
     Route::post('/new-itenary', [AuthController::class, 'saveroom'])->name('new.itenary');
-    Route::get('/manage-itenary', [AuthController::class, 'manageroom'])->name('manage.itenary');
+    Route::get('/show_room', [AuthController::class, 'manageroom'])->name('manage.itenary');
     Route::get('/edit-room/{id}', [AuthController::class, 'roomEdit'])->name('edit.room');
     Route::post('/destroy', [AuthController::class, 'destroy'])->name('delete.room');
     Route::post('/update-room', [AuthController::class, 'roomUpdate'])->name('update.room');
@@ -151,7 +148,7 @@ Route::put('/update/{id}',[TitleController::class,'updates'])->name('category.up
   //hotel info
     Route::get('/add-hotel', [AuthController::class, 'storehotel'])->name('store.hotel');
     Route::post('/new-hotel', [AuthController::class, 'savehotel'])->name('new.hotel'); 
-    Route::get('/manage-product', [AuthController::class, 'manageProduct'])->name('manage.product');
+    Route::get('/show_hotel', [AuthController::class, 'hotelshow'])->name('manage.product');
     Route::get('/edit-product/{id}', [AuthController::class, 'productEdit'])->name('edit.product');
     Route::post('/delete-product/{id}', [AuthController::class, 'productDelete'])->name('delete.product');
     Route::post('/update-product', [AuthController::class, 'productUpdate'])->name('update.product');
@@ -163,6 +160,12 @@ Route::put('/update/{id}',[TitleController::class,'updates'])->name('category.up
     Route::get('/index', [AuthController::class, 'index']);
     Route::get('/gethotel', [AuthController::class, 'gethotel']);
     Route::get('/apisearch', [AuthController::class, 'apisearch']);
+
+    //Bookinghote
+    Route::get('/booking', [AuthController::class, 'booking']);
+    Route::post('/bookHotel', [AuthController::class, 'bookHotel']);
+    Route::post('/bookHotels', [AuthController::class, 'updateRoomInventory']);
+   
 });
 
 Route::post('/insure_db_order_create', [AuthController::class, 'insure_db_order_create']);

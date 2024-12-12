@@ -11,11 +11,10 @@ class room extends Model
     private static $unit,$product;
 
     protected $fillable = [
-        'room_id',
-        'country_id',
+        
         'hotel_id' ,
         'city_id',
-        'room_num',
+        'room_type',
         'available_capacity' ,
         'max_capacity',
         'refundable',
@@ -28,9 +27,21 @@ class room extends Model
         'extra_bed' ,
         'room_facilities' ,
         'bed_type',
+        'total_rooms',
+        'allocated_online_inventory',
+        'allocated_offline_inventory',
+        'online_sold',
+        'offline_sold',
+        'inventory', 
+        'sales', 
 
     ];
-
+    
+    protected $casts = [
+        'inventory' => 'array',
+        'sales' => 'array',
+    ];
+    
     public static function destroy($id){
         self::$unit=room::find($id);
             self::$unit->delete();

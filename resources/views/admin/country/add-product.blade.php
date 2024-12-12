@@ -60,8 +60,8 @@
                         <div class="card-body">
                             <div class="row">
                                 <div class="col-md-6">
-                                    <input class="form-control" type="text" name="room_num[]" placeholder="Enter room Name">
-                                           @error('room_num')
+                                    <input class="form-control" type="text" name="room_type[]" placeholder="Enter Room Type">
+                                           @error('room_type')
                                            <div class="text-danger">{{ $message }}</div>
                                             @enderror
                                 </div>
@@ -78,7 +78,6 @@
                                 </div>
 
                             </div><br>
-
                             <div class="col-md-6" id="additionalFields">
                                 <label for="" class="col-sm-6 control-label"><b>Room Only Refundable</b> <span
                                         class="text-danger">*</span></label>
@@ -168,8 +167,14 @@
                                         </div>
                                     </div>
                                 </div>
-
-
+                                <br>
+                                    <div class="col-md-6">
+                                    <label for="" class="col-sm-6 control-label"><b> Rooms Inventory</b> <span class="text-danger">*</span></label>
+                                    <input class="form-control" type="number" name="total_rooms[]" placeholder="TotalRooms">
+                                    <input class="form-control" type="number" name="allocated_online_inventory[]" placeholder="OnlineInventory">
+                                    <input class="form-control" type="number" name="allocated_offline_inventory[]" placeholder="OfflineInventory">
+                                </div>
+                                <br>
                                     <div class="row">
                                 <div class="col-md-6">
                                     <label for="" class="col-sm-6 control-label"><b>Room Size</b> <span
@@ -195,7 +200,7 @@
                                     <!-- Button/link to open the modal -->
                                     <input class="form-control" type="number" name="room_available[]" placeholder="Enter value">
                                 </div>
-                            </div>
+                            </div>      
 
                             <div class="row" style="margin:10px;">
                                 <div class="col-md-6">
