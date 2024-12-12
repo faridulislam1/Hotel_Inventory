@@ -545,13 +545,6 @@ public function register1(Request $request)
         return response()->json(auth()->user());
     }
 
-    public function delete(Request $request)
-    {
-        Hotel::delete($request->id);
-        return back()->with('message', 'Info deleted');
-    }
-
-
     //booking
     public function booking()
     {
