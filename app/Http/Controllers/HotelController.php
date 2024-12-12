@@ -127,35 +127,35 @@ class HotelController extends Controller
         $extraBedValue = 'No';
     }
 
-//     $singleImageUrl = self::getImageUrl($request);
-//     $multipleImageUrls = self::getMultiImageUrl($request);
+    $singleImageUrl = self::getImageUrl($request);
+    $multipleImageUrls = self::getMultiImageUrl($request);
 
-//     hotel::create([
-//         'hotel' => $request->hotel,
-//         'city_id' => $city->id,
-//         // 'country_id' => $country->id,
-//         'embed_code' => $request->embed_code,
-//         'landmark' => $request->landmark,
-//         'rating' => $request->rating,
-//         'address' => $request->address,
-//         'highlights' => $request->highlights,
-//         'long_decription' => $request->long_decription,
-//         'currency' => $request->currency,
-//         'term_condition' => $request->term_condition,
-//         'longitude' => $request->longitude,
-//         'litetitude' => $request->litetitude,
-//         'Single_image' => $singleImageUrl,
-//         'multiple_image' => $multipleImageUrls !== null && is_array($multipleImageUrls) ? serialize($multipleImageUrls) : null,
-//         'facilities' => is_array($request->facilities) ? implode(',', $request->facilities) : $request->facilities, 
-//     ]);
+    hotel::create([
+        'hotel' => $request->hotel,
+        'city_id' => $city->id,
+        // 'country_id' => $country->id,
+        'embed_code' => $request->embed_code,
+        'landmark' => $request->landmark,
+        'rating' => $request->rating,
+        'address' => $request->address,
+        'highlights' => $request->highlights,
+        'long_decription' => $request->long_decription,
+        'currency' => $request->currency,
+        'term_condition' => $request->term_condition,
+        'longitude' => $request->longitude,
+        'litetitude' => $request->litetitude,
+        'Single_image' => $singleImageUrl,
+        'multiple_image' => $multipleImageUrls !== null && is_array($multipleImageUrls) ? serialize($multipleImageUrls) : null,
+        'facilities' => is_array($request->facilities) ? implode(',', $request->facilities) : $request->facilities, 
+    ]);
 
-//     return back()->with('message', 'Info saved');
-// }
+    return back()->with('message', 'Info saved');
+}
 
 
-OtherImage::newOtherImage($request->other_image, $this->$product->id);
+// OtherImage::newOtherImage($request->other_image, $this->$product->id);
 
-        $singleImageUrl = self::getImageUrl($request);
+//         $singleImageUrl = self::getImageUrl($request);
     
          //$multipleImageUrls = self::newOtherImage($request);
        
@@ -164,27 +164,27 @@ OtherImage::newOtherImage($request->other_image, $this->$product->id);
         //     $multipleImageUrls = $this->newOtherImages($request->file('other_image'));
         // }
 
-        // Create Hotel
-        Hotel::create([
-            'hotel' => $request->hotel,
-            'city_id' => $city->id,
-            'embed_code' => $request->embed_code,
-            'landmark' => $request->landmark,
-            'rating' => $request->rating,
-            'address' => $request->address,
-            'highlights' => $request->highlights,
-            'long_decription' => $request->long_decription,
-            'currency' => $request->currency,
-            'term_condition' => $request->term_condition,
-            'longitude' => $request->longitude,
-            'litetitude' => $request->litetitude,
-            //'single_image' => $singleImageUrl,
-            //'multiple_image' => !empty($multipleImageUrls) ? serialize($multipleImageUrls) : null,
-            'facilities' => is_array($request->facilities) ? implode(',', $request->facilities) : $request->facilities,
-        ]);
+        // // Create Hotel
+        // Hotel::create([
+        //     'hotel' => $request->hotel,
+        //     'city_id' => $city->id,
+        //     'embed_code' => $request->embed_code,
+        //     'landmark' => $request->landmark,
+        //     'rating' => $request->rating,
+        //     'address' => $request->address,
+        //     'highlights' => $request->highlights,
+        //     'long_decription' => $request->long_decription,
+        //     'currency' => $request->currency,
+        //     'term_condition' => $request->term_condition,
+        //     'longitude' => $request->longitude,
+        //     'litetitude' => $request->litetitude,
+        //     'single_image' => $singleImageUrl,
+        //     'multiple_image' => !empty($multipleImageUrls) ? serialize($multipleImageUrls) : null,
+        //     'facilities' => is_array($request->facilities) ? implode(',', $request->facilities) : $request->facilities,
+        // ]);
 
-        return response()->json(['message' => 'Hotel Data successfully inserted'], 201);
-        }
+        // return response()->json(['message' => 'Hotel Data successfully inserted'], 201);
+        // }
 
 
 

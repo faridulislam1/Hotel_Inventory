@@ -16,6 +16,10 @@ use App\Models\booking_agent;
 use App\Models\booking_tour;
 use App\Models\passenger;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Http;
 
 class  BookingController extends Controller
 {
@@ -27,12 +31,12 @@ class  BookingController extends Controller
     public function login(Request $request)
     {
         $request->validate([
-            'emailID' => 'required|string|email',
+            'email' => 'required|string|email',
             'password' => 'required|string',
         ]);
     
         // Retrieve the credentials from the request
-        $credentials = $request->only('emailID', 'password');
+        $credentials = $request->only('email', 'password');
     
         // Attempt to authenticate the user
         if (!Auth::attempt($credentials)) {
@@ -46,7 +50,7 @@ class  BookingController extends Controller
     
         return response()->json([
             'user' => [
-                'emailID' => $user->emailID, 
+                'email' => $user->email, 
                 'country' => $user->country,
                 'division' => $user->division,
                 'district' => $user->district, 
@@ -82,12 +86,12 @@ class  BookingController extends Controller
                 'status' => 'nullable|string|max:20', // Status should have a reasonable length
                 'password' => 'required|string|min:8', // Password must be present and at least 8 characters long
             ], [
-                'emailID.unique' => 'The email has already been taken.',
+                'email.unique' => 'The email has already been taken.',
             ]);
         
             // Create the user
             $user = User::create([
-                'emailID' => $request->emailID,
+                'email' => $request->email,
                 'mobile' => $request->mobile,
                 'address' => $request->address,
                 'division' => $request->division,
@@ -711,55 +715,54 @@ class  BookingController extends Controller
         return response()->json($passengerData);
     }
 
-    // public function shows($id)
-    // {
-    //     try {
-    //         $booking = Booking::with(['passengers' => function ($query) {
-    //             $query->select(
-    //                 'bookings_id',
-    //                 'title',
-    //                 'first_name',
-    //                 'last_name',
-    //                 'gender',
-    //                 'nationality',
-    //                 'email',
-    //                 'passport_num',
-    //                 'passport_expiry_date',
-    //                 'date_of_birth',
-    //                 'type'
-    //             );
-    //         }])->findOrFail($id);
+    public function single_data($id)
+    {
+        try {
+            $booking = Booking::with(['passengers' => function ($query) {
+                $query->select(
+                    'bookings_id',
+                    'title',
+                    'first_name',
+                    'last_name',
+                    'gender',
+                    'nationality',
+                    'email',
+                    'passport_num',
+                    'passport_expiry_date',
+                    'date_of_birth',
+                    'type'
+                );
+            }])->findOrFail($id);
     
-    //         $response = [
-    //             'user_id' => $booking->user_id,
-    //             'contactNo' => $booking->contactNo,
-    //             'contactNo2' => $booking->contactNo2,
-    //             'remark_book' => $booking->remark_book,
-    //             'pcc_currency' => $booking->pcc_currency,
-    //             'flt_class' => $booking->flt_class,
-    //             'bass_copy' => $booking->bass_copy,
-    //             'refund_point' => $booking->refund_point,
-    //             'reissue_point' => $booking->reissue_point,
-    //             'passID' => $booking->passID,
-    //             'agent_bal' => $booking->agent_bal,
-    //             'agent_crit' => $booking->agent_crit,
-    //             'subID' => $booking->subID,
-    //             'passenger' => [
-    //                 'adult' => $booking->passengers->where('type', 'adult')->values(),
-    //                 'infant' => $booking->passengers->where('type', 'infant')->values(),
-    //                 'children' => $booking->passengers->where('type', 'children')->values(),
-    //             ],
-    //         ];
+            $response = [
+                'user_id' => $booking->user_id,
+                'contactNo' => $booking->contactNo,
+                'contactNo2' => $booking->contactNo2,
+                'remark_book' => $booking->remark_book,
+                'pcc_currency' => $booking->pcc_currency,
+                'flt_class' => $booking->flt_class,
+                'bass_copy' => $booking->bass_copy,
+                'refund_point' => $booking->refund_point,
+                'reissue_point' => $booking->reissue_point,
+                'passID' => $booking->passID,
+                'agent_bal' => $booking->agent_bal,
+                'agent_crit' => $booking->agent_crit,
+                'subID' => $booking->subID,
+                'passenger' => [
+                    'adult' => $booking->passengers->where('type', 'adult')->values(),
+                    'infant' => $booking->passengers->where('type', 'infant')->values(),
+                    'children' => $booking->passengers->where('type', 'children')->values(),
+                ],
+            ];
     
-    //         return response()->json($response, 200);
+            return response()->json($response, 200);
     
-    //     } catch (ModelNotFoundException $e) {
-    //         return response()->json([
-    //             'message' => 'No booking found with the provided ID.'
-    //         ], 404);
-    //     }
-    // }
-
+        } catch (ModelNotFoundException $e) {
+            return response()->json([
+                'message' => 'No booking found with the provided ID.'
+            ], 404);
+        }
+    }
 
 
     public function shows()
@@ -791,6 +794,61 @@ class  BookingController extends Controller
 
     return response()->json($response, 200);
 }
+
+
+public function sendOtp(Request $request)
+{
+    $request->validate(['emailID' => 'required|email|exists:users,emailID']);
+    
+    $otp = rand(100000, 999999);
+    Session::put('otp', $otp); 
+    Session::put('emailID', $request->emailID);
+
+    // Send OTP via email
+    Mail::raw("Your OTP is $otp", function($message) use ($request) {
+        $message->to($request->emailID)
+                ->subject('Password Reset OTP');
+    });
+
+    return response()->json(['message' => 'OTP sent to your email.'], 200);
+}
+
+// Method to verify OTP
+public function verifyOtp(Request $request)
+{
+    $request->validate(['otp' => 'required|numeric']);
+
+    if (Session::get('otp') == $request->otp) {
+        // OTP is correct, redirect to password reset page or show reset form
+        Session::forget('otp'); // Clear OTP from session after verification
+        return response()->json(['message' => 'OTP verified. You may now reset your password.'], 200);
+    } else {
+        return response()->json(['message' => 'Invalid OTP. Please try again.'], 400);
+    }
+}
+
+
+   public function fetchIPData($ip)
+    {
+        $apiKey = '05D4015FA6DB5903B6E18B7BCD4C62F6'; // Your API key
+        $url = "https://api.ip2location.io/?key=$apiKey&ip=$ip";
+
+        try {
+           
+            $response = Http::get($url);
+
+            if ($response->successful()) { 
+                $data = $response->json();
+                return response()->json($data); 
+            } else {
+               
+                return response()->json(['error' => 'Failed to fetch IP data'], $response->status());
+            }
+        } catch (\Exception $e) {
+         
+            return response()->json(['error' => 'An error occurred: ' . $e->getMessage()], 500);
+        }
+    }
 
 }
 

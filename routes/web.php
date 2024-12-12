@@ -43,8 +43,6 @@ Route::middleware([
 
     Route::get('/product/get-subcategory-by-category',[RoomController::class,'getSubCategoryByCategory'])->name('product.get-subcategory-by-category');
     Route::get('/product/hotel',[RoomController::class,'hotel'])->name('product.hotel');
-
-
     Route::post('/get-cities', [ItenaryController::class,'getcity']); 
     Route::post('/get-hotels', [ItenaryController::class,'gethotel']);
 

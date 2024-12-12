@@ -21,12 +21,15 @@ return new class extends Migration
             $table->string('contact_no')->nullable(); 
             $table->string('address')->nullable(); 
             $table->string('currency')->default('BDT'); 
-            $table->string('emailID')->unique(); 
+            $table->string('email')->unique(); 
+            $table->string('otp')->nullable();
+            $table->timestamp('expires_at')->nullable();
             $table->decimal('balance')->default(0.00); 
             $table->decimal('credit_balance')->default(0.00); 
             $table->string('status')->default('active'); 
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+            $table->string('password_confirmation')->nullable();
             $table->rememberToken();
             $table->foreignId('current_team_id')->nullable();
             $table->string('profile_photo_path', 2048)->nullable();

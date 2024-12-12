@@ -41,12 +41,12 @@ use App\Models\otherImage;
     public function login(Request $request)
     {
         $request->validate([
-            'emailID' => 'required|string|email',
+            'email' => 'required|string|email',
             'password' => 'required|string',
         ]);
     
         // Retrieve the credentials from the request
-        $credentials = $request->only('emailID', 'password');
+        $credentials = $request->only('email', 'password');
     
         // Attempt to authenticate the user
         if (!Auth::attempt($credentials)) {
@@ -60,7 +60,7 @@ use App\Models\otherImage;
     
         return response()->json([
             'user' => [
-                'emailID' => $user->emailID, 
+                'email' => $user->email, 
                 'country' => $user->country,
                 'division' => $user->division,
                 'district' => $user->district, 
@@ -82,7 +82,7 @@ use App\Models\otherImage;
         {
             // Validate the request
             $request->validate([
-                'emailID' => 'required|string|email|max:255|unique:users,emailID,' . $request->emailID,
+                'email' => 'required|string|email|max:255|unique:users,email,' . $request->email,
                 'address' => 'nullable|string|max:255',
                 'division' => 'nullable|string|max:255',
                 'country' => 'nullable|string|max:255',
@@ -101,7 +101,7 @@ use App\Models\otherImage;
         
             // Create the user
             $user = User::create([
-                'emailID' => $request->emailID,
+                'email' => $request->email,
                 'mobile' => $request->mobile,
                 'address' => $request->address,
                 'division' => $request->division,

@@ -31,12 +31,10 @@ Route::get('/admin', function(Request $request){
 //     });
 // });
 
- 
 Route::post('/login', [AuthController::class, 'login']);
 //Route::post('/register', [AuthController::class, 'register']);
 Route::post('/register1', [AuthController::class, 'register1']);
 Route::post('/login1', [AuthController::class, 'login1']);
-
 
 //booking
 Route::post('/bookings', [BookingController::class, 'store'])->name('');
@@ -62,10 +60,24 @@ Route::get('/tour_show', [BookingController::class, 'tour_show'])->name('');
 
 Route::post('/store-passengers', [BookingController::class, 'stores']);
 Route::get('/get-passengers', [BookingController::class, 'getPassengers']);
-// Route::get('/get-shows/{id}', [BookingController::class, 'shows']);
+Route::get('/single_data/{id}', [BookingController::class, 'single_data']);
 Route::get('/get-shows', [BookingController::class, 'shows']);
 
 
+//ip_loction
+Route::get('/ip-location/{ip}', [TitleController::class, 'fetchIPData']);
+Route::post('/fetchRailData', [TitleController::class, 'fetchRailData']);
+
+//search Air Api
+
+Route::get('/search-airport', [TitleController::class, 'searchAirport']);
+
+
+
+// In routes/api.php
+Route::post('/forgot-password', [TitleController::class, 'sendOtp'])->name('password.otp.send');
+Route::post('/verify-otp', [TitleController::class, 'verifyOtp'])->name('password.otp.verify');
+Route::post('/reset-password', [TitleController::class, 'resetPassword'])->name('password.reset');
 
 
 Route::middleware('role:admin')->group(function () {
@@ -106,10 +118,10 @@ Route::put('/update/{id}',[TitleController::class,'updates'])->name('category.up
     Route::post('/new-room', [RoomController::class, 'saveroom'])->name('new.room');
     Route::get('/manage-room', [RoomController::class, 'manageProduct'])->name('manage.room');
 
-Route::group([
-    'middleware' => 'api',
-    'prefix' => 'auth'
-], function ($router) {
+    Route::group([
+        'middleware' => 'api',
+        'prefix' => 'auth'
+    ], function ($router) {
      Route::post('/login', [AuthController::class, 'login']);
      Route::post('/register', [AuthController::class, 'register']);
     Route::post('/logout', [AuthController::class, 'logout']);
