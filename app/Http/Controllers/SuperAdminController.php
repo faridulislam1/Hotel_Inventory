@@ -12,4 +12,6 @@ class SuperAdminController extends Controller
             'message' => 'Super Admin Dashboard',
         ]);
     }
+
+    
 }

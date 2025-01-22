@@ -18,11 +18,7 @@ Route::middleware([
     'verified'
 ])->group(function () {
 
-    
-
-
     Route::get('/dashboard',[DashboardController::class,'index'])->name('dashboard');
-
     Route::get('/add-hotel',[HotelController::class,'storehotel'])->name('store.hotel');
     Route::post('/new-hotel',[HotelController::class,'savehotel'])->name('new.hotel');
     Route::get('/manage-product',[HotelController::class,'manageProduct'])->name('manage.product');
@@ -71,7 +67,6 @@ Route::middleware([
 //    Route::get('/manage-room',[RoomController::class,'manageProduct'])->name('manage.room');
 
      Route::get('/scraper',action: [TitleController::class,'scraper'])->name('scraper');
-
 
 
 });
