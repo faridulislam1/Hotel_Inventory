@@ -30,14 +30,14 @@ use Illuminate\Support\Facades\Cache;
 class HotelMergeController extends Controller
 {
 
-    public function mergeapi(Request $request)
+    public function filterapi(Request $request)
     {
       
            try {
             $countryCode = $request->input('countryCode');
             $cityCode = $request->input('cityCode');
             $hotelName = $request->input('hotelName');
-            $Rooms = $request->input('Rooms.Room', []);
+            $Rooms = $request->input('Rooms', []);
             $startDate = $request->input('startDate');
             $endDate = $request->input('endDate');
             $authToken = $request->header('Sabretoken');

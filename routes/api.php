@@ -162,7 +162,7 @@ Route::put('/update/{id}',[TitleController::class,'updates'])->name('category.up
     Route::get('/index', [AuthController::class, 'index']);
     Route::get('/gethotel', [AuthController::class, 'gethotel']);
     Route::get('/apisearch', [AuthController::class, 'apisearch']);
-    Route::post('/mergeapi', [HotelMergeController::class, 'mergeapi']);
+    Route::post('/mergeapi', [HotelMergeController::class, 'filterapi']);
 
     //Bookinghote
     Route::get('/booking', [AuthController::class, 'booking']);
