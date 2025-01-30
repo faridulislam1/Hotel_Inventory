@@ -13,6 +13,8 @@ use App\Http\middleware\RoleMiddleware;
 use App\Http\Controllers\CountriesController;
 use App\Http\Controllers\TitleController;
 use App\Http\Controllers\BookingController;
+use App\Http\Controllers\HotelMergeController;
+use App\Http\Controllers\searchController;
 
 Route::get('/countries', [CountriesController::class, 'getAllCountries']);
 Route::get('/convertXmlToJson', [AdminController::class, 'convertXmlToJson']);
@@ -160,12 +162,22 @@ Route::put('/update/{id}',[TitleController::class,'updates'])->name('category.up
     Route::get('/index', [AuthController::class, 'index']);
     Route::get('/gethotel', [AuthController::class, 'gethotel']);
     Route::get('/apisearch', [AuthController::class, 'apisearch']);
+    Route::post('/mergeapi', [HotelMergeController::class, 'mergeapi']);
 
     //Bookinghote
     Route::get('/booking', [AuthController::class, 'booking']);
     Route::post('/bookHotel', [AuthController::class, 'bookHotel']);
+    Route::get('/show_hotelbook', [AuthController::class, 'show_hotelbook']);
+
     Route::post('/bookHotels', [AuthController::class, 'updateRoomInventory']);
-   
+
+
+    //searchresult
+    Route::get('/showsearch', [searchController::class, 'showsearch']);
+    Route::post('/search', [searchController::class, 'storesearch']);
+
+    Route::post('/searchh', [SearchController::class, 'searchresult']);
+
 });
 
 Route::post('/insure_db_order_create', [AuthController::class, 'insure_db_order_create']);

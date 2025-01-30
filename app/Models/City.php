@@ -34,15 +34,23 @@ class City extends Model
     //     return $this->hasMany(room::class);
     // }
 
+    // public function country()
+    // {
+    //     return $this->belongsTo(Country::class);
+    // }
+    // public function hotels()
+    // {
+    //     return $this->hasMany(hotel::class);
+    // }
+
+    public function hotels()
+    {
+        return $this->hasMany(Hotel::class);
+    }
+
     public function country()
     {
         return $this->belongsTo(Country::class);
     }
-    public function hotels()
-    {
-        return $this->hasMany(hotel::class);
-    }
-
-   
    
 }

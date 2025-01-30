@@ -340,80 +340,126 @@ use Illuminate\Support\Facades\Cache;
         return response()->json(['message' => 'Hotel Data successfully inserted'], 201);
     }
 
-    // public function manageProduct(Request $request)
-    // {   
-    //                 $countries = Country::with(['cities.hotels.rooms'])->get();
+    // public function hotelshow(Request $request)
+    // {
+    //     try {
+          
+    //         $countries = Country::with(['cities.hotels.rooms'])->get();        
+    //         $countries->each(function ($country) {        
+    //             $country->makeHidden(['created_at', 'updated_at']);
+    
+    //             $country->cities->each(function ($city) {
+    //                 $city->makeHidden(['created_at', 'updated_at', 'country_id']);
+    
+    //                 $city->hotels->each(function ($hotel) {
+    //                     $hotel->makeHidden(['created_at', 'updated_at', 'country_id', 'city_id']);                      
+    //                     if (!empty($hotel->multiple_image) && is_string($hotel->multiple_image)) {
+    //                         $images = @unserialize($hotel->multiple_image);
+    //                         $hotel->multiple_image = is_array($images) ? array_values($images) : [];
+    //                     } else {
+    //                         $hotel->multiple_image = [];
+    //                     }                      
+    //                     $hotel->facilities = is_array($hotel->facilities)
+    //                         ? $hotel->facilities
+    //                         : array_filter(explode(',', $hotel->facilities));
+    
+    //                     $hotel->rooms->each(function ($room) {
+                          
+    //                         $room->inventory = [
+    //                             'totalRooms' => $room->total_rooms,
+    //                             'allocatedOnlineInventory' => $room->allocated_online_inventory,
+    //                             'allocatedOfflineInventory' => $room->allocated_offline_inventory,
+    //                         ];
+    //                         $room->updated_sales = $room->online_sold + $room->offline_sold;
+    //                         $room->bed_type = is_array($room->bed_type)
+    //                             ? $room->bed_type
+    //                             : array_filter(explode(',', $room->bed_type));
+    
+    //                         $room->room_facilities = is_array($room->room_facilities)
+    //                             ? $room->room_facilities
+    //                             : array_filter(explode(',', $room->room_facilities));
+    
                     
-    //                 // Loop through each country and hide the specified fields
-    //                 $countries->each(function ($country) { 
-    //                     $country->makeHidden(['id', 'created_at', 'updated_at']);
-    //                     $country->cities->each(function ($city) {
-    //                         $city->makeHidden(['id', 'created_at', 'updated_at', 'country_id', 'city_id']);
-    //                         $city->hotels->each(function ($hotel) {
-    //                             $hotel->makeHidden([ 'created_at', 'updated_at', 'country_id', 'city_id', 'hotel_id']);
-    //                             $hotel->rooms->each(function ($room) {
-    //                                 $room->makeHidden(['created_at', 'updated_at', 'hotel_id', 'city_id']);
-    //                             });
-    //                         });
+    //                         $room->makeHidden([
+    //                             'created_at', 'updated_at', 'hotel_id', 'city_id',
+    //                             'total_rooms', 'allocated_online_inventory', 'allocated_offline_inventory',
+    //                             'online_sold', 'offline_sold',
+    //                         ]);
     //                     });
     //                 });
-
-    //                 return response()->json($countries);
+    //             });
+    //         });         
+    //         return response()->json([
+    //             'message' => 'Success',
+    //             'status' => 200,
+    //             'data' => $countries,
+    //         ], 200);
+    //     } catch (\Exception $e) {
+    //         return response()->json([
+    //             'message' => 'An error occurred',
+    //             'status' => 500,
+    //             'error' => $e->getMessage(),
+    //         ], 500);
+    //     }
     // }
- 
+    
+    
+
+
     public function hotelshow(Request $request)
     {
         try {
-          
-            $countries = Country::with(['cities.hotels.rooms'])->get();        
-            $countries->each(function ($country) {        
-                $country->makeHidden(['created_at', 'updated_at']);
+            $hotels = Hotel::with(['city.country', 'rooms'])->get();
     
-                $country->cities->each(function ($city) {
-                    $city->makeHidden(['created_at', 'updated_at', 'country_id']);
+            $formattedHotels = $hotels->map(function ($hotel) {
+                return [
+                    'id' => $hotel->id,
+                    'hotel' => $hotel->hotel, 
+                    'embed_code' => $hotel->embed_code,
+                    'landmark' => $hotel->landmark,
+                    'rating' => $hotel->rating,
+                    'country' => $hotel->city->country->country ?? null, 
+                    'city' => $hotel->city->city ?? null,
+                    // 'Single_image' => $hotel->Single_image,
+                    'images' => !empty($hotel->multiple_image) && is_string($hotel->multiple_image)
+                        ? (is_array(@unserialize($hotel->multiple_image)) ? array_values(@unserialize($hotel->multiple_image)) : [])
+                        : [],
+                    'address' => $hotel->address,
+                    'highlights' => $hotel->highlights,
+                    'long_decription' => $hotel->long_decription,
+                    'currency' => $hotel->currency,
+                    'term_condition' => $hotel->term_condition,
+                    'longitude' => $hotel->longitude,
+                    'litetitude' => $hotel->litetitude,
     
-                    $city->hotels->each(function ($hotel) {
-                        $hotel->makeHidden(['created_at', 'updated_at', 'country_id', 'city_id']);                      
-                        if (!empty($hotel->multiple_image) && is_string($hotel->multiple_image)) {
-                            $images = @unserialize($hotel->multiple_image);
-                            $hotel->multiple_image = is_array($images) ? array_values($images) : [];
-                        } else {
-                            $hotel->multiple_image = [];
-                        }                      
-                        $hotel->facilities = is_array($hotel->facilities)
-                            ? $hotel->facilities
-                            : array_filter(explode(',', $hotel->facilities));
-    
-                        $hotel->rooms->each(function ($room) {
-                          
-                            $room->inventory = [
+                    'facilities' => is_array($hotel->facilities)
+                    ? $hotel->facilities
+                    : array_filter(explode(',', $hotel->facilities)),
+                    
+                    'rooms' => $hotel->rooms->map(function ($room) {
+                        return [
+                            'id' => $room->id,
+                            'inventory' => [
                                 'totalRooms' => $room->total_rooms,
                                 'allocatedOnlineInventory' => $room->allocated_online_inventory,
                                 'allocatedOfflineInventory' => $room->allocated_offline_inventory,
-                            ];
-                            $room->updated_sales = $room->online_sold + $room->offline_sold;
-                            $room->bed_type = is_array($room->bed_type)
+                            ],
+                            'updated_sales' => $room->online_sold + $room->offline_sold,
+                            'bed_type' => is_array($room->bed_type)
                                 ? $room->bed_type
-                                : array_filter(explode(',', $room->bed_type));
-    
-                            $room->room_facilities = is_array($room->room_facilities)
+                                : array_filter(explode(',', $room->bed_type)),
+                            'room_facilities' => is_array($room->room_facilities)
                                 ? $room->room_facilities
-                                : array_filter(explode(',', $room->room_facilities));
+                                : array_filter(explode(',', $room->room_facilities)),
+                        ];
+                    }),
+                ];
+            });
     
-                    
-                            $room->makeHidden([
-                                'created_at', 'updated_at', 'hotel_id', 'city_id',
-                                'total_rooms', 'allocated_online_inventory', 'allocated_offline_inventory',
-                                'online_sold', 'offline_sold',
-                            ]);
-                        });
-                    });
-                });
-            });         
             return response()->json([
                 'message' => 'Success',
                 'status' => 200,
-                'data' => $countries,
+                'data' => $formattedHotels,
             ], 200);
         } catch (\Exception $e) {
             return response()->json([
@@ -423,7 +469,6 @@ use Illuminate\Support\Facades\Cache;
             ], 500);
         }
     }
-    
     
     public function search(Request $request)
     {
@@ -748,6 +793,24 @@ use Illuminate\Support\Facades\Cache;
         ]);
     }
 
+
+    public function show_hotelbook()
+    {
+        $bookings = HotelBook::all()->makeHidden(['created_at', 'updated_at', 'user_id']);
+        $formattedBookings = $bookings->map(function ($booking) {
+            return [
+                'success' => true,
+                'statusCode' => 200,
+                'data' => $booking,
+    
+            ];
+        });
+
+        return response()->json($formattedBookings, 200);
+    }
+
+
+
     private function updateRoomInventory($room, $roomsBooked, $bookingType)
     {
         $sales = $room->sales ?? ['onlineSold' => 0, 'offlineSold' => 0];
@@ -930,8 +993,7 @@ use Illuminate\Support\Facades\Cache;
    
     public function apisearch(Request $request)
 {
-
-        
+  
        try {
             $countryCode = $request->input('countryCode');
             $cityCode = $request->input('cityCode');
@@ -1017,8 +1079,7 @@ use Illuminate\Support\Facades\Cache;
         }
 
         $responseData1 = $responseData1['GetHotelAvailRS']['HotelAvailInfos']['HotelAvailInfo'];
-
-        // Filter hotels by country code, city code, or hotel name
+        
         $filteredHotels = array_filter($responseData1, function ($hotel) use ($countryCode, $cityCode, $hotelName) {
             $countryMatch = isset($hotel['HotelInfo']['LocationInfo']['Address']['CountryName']['Code']) &&
                 $hotel['HotelInfo']['LocationInfo']['Address']['CountryName']['Code'] === $countryCode;
@@ -1034,69 +1095,66 @@ use Illuminate\Support\Facades\Cache;
 
         // Transform the filtered hotels
         $transformedHotels = array_map(function ($hotel) {
+            // Access the first RateInfo element to get CurrencyCode
+            $currencyCode = null;
+            if (isset($hotel['HotelRateInfo']['RateInfos']['RateInfo'][0]['CurrencyCode'])) {
+                $currencyCode = $hotel['HotelRateInfo']['RateInfos']['RateInfo'][0]['CurrencyCode'];
+            }
+        
             return [
-                'hotels' => [
                 'HotelCode' => $hotel['HotelInfo']['HotelCode'] ?? null,
                 'hotel' => $hotel['HotelInfo']['HotelName'] ?? null,
-                // 'Logo' => $hotel['HotelInfo']['Logo'] ?? null,
                 'rating' => $hotel['HotelInfo']['SabreRating'] ?? null,
-                'distance' => $hotel['HotelInfo']['Distance'] ?? null,
-                'LocationInfo' => [
-                    'litetitude' => $hotel['HotelInfo']['LocationInfo']['Latitude'] ?? null,
-                    'longitude' => $hotel['HotelInfo']['LocationInfo']['Longitude'] ?? null,
-                    'Address' => [
-                        'AddressLine1' => $hotel['HotelInfo']['LocationInfo']['Address']['AddressLine1'] ?? null,
-                        'cities' => [
-                            'city' => $hotel['HotelInfo']['LocationInfo']['Address']['CityName']['CityCode'] ?? null,
-                            'value' => $hotel['HotelInfo']['LocationInfo']['Address']['CityName']['value'] ?? null,
-                        ],
-                        'StateProv' => [
-                            'StateCode' => $hotel['HotelInfo']['LocationInfo']['Address']['StateProv']['StateCode'] ?? null,
-                            'value' => $hotel['HotelInfo']['LocationInfo']['Address']['StateProv']['value'] ?? null,
-                        ],
-                        'PostalCode' => $hotel['HotelInfo']['LocationInfo']['Address']['PostalCode'] ?? null,
-                        'country' => [
-                            'country' => $hotel['HotelInfo']['LocationInfo']['Address']['CountryName']['Code'] ?? null,
-                            'value' => $hotel['HotelInfo']['LocationInfo']['Address']['CountryName']['value'] ?? null,
-                        ],
-                    ],
-                    'Contact' => [
-                        'Phone' => $hotel['HotelInfo']['LocationInfo']['Contact']['Phone'] ?? null,
-                        'Fax' => $hotel['HotelInfo']['LocationInfo']['Contact']['Fax'] ?? null,
-                    ],
-                ],
+                // 'distance' => $hotel['HotelInfo']['Distance'] ?? null,
+                'latitude' => $hotel['HotelInfo']['LocationInfo']['Latitude'] ?? null,
+                'longitude' => $hotel['HotelInfo']['LocationInfo']['Longitude'] ?? null,
+                'city' => $hotel['HotelInfo']['LocationInfo']['Address']['CityName']['CityCode'] ?? null,
+                'country' => $hotel['HotelInfo']['LocationInfo']['Address']['CountryName']['Code'] ?? null,
+                'address' => $hotel['HotelInfo']['LocationInfo']['Address']['AddressLine1'] ?? null,
+                'currency' => $currencyCode,
+       
+
+                'facilities' => is_array($hotel['HotelInfo']['Amenities']['Amenity'])
+                    ? array_map(function ($amenity) {
+                        return $amenity['Description'] ?? '';
+                    }, $hotel['HotelInfo']['Amenities']['Amenity'])
+                    : array_filter(explode(',', $hotel['HotelInfo']['Amenities']['Amenity'] ?? '')),
 
 
-                'facilities' => [
-                array_map(function($amenity) {
-                    return $amenity['Description'] ?? '';  
-                }, $hotel['HotelInfo']['Amenities']['Amenity'] ?? []),
-            ],
+                // 'facilities' => [
+                // array_map(function($amenity) {
+                //     return $amenity['Description'] ?? '';  
+                // }, $hotel['HotelInfo']['Amenities']['Amenity'] ?? []),
 
-            ],
-
-             
-                    'Rooms' => array_map(function ($room) {
+                'Rooms' => array_map(function ($room) {
                         return [
                             'room_type' => $room['RoomType'] ?? null,
                             'NonSmoking' => $room['NonSmoking'] ?? null,
                             'GuestRoomInfo' => $room['GuestRoomInfo'] ?? null,
-                            'bed_type' => $room['BedTypes']['BedType'] ?? [],
-                            'RoomDescription' => [
-                                'Name' => $room['RoomDescription']['Name'] ?? null,
-                                'Text' => $room['RoomDescription']['Text'] ?? [],
+                            // 'bed_type' => $room['BedTypes']['BedType'] ?? [],
+
+                              'bed_type' => [
+                                $room['RoomDescription']['Name'] ?? null,
+                                $room['RoomDescription']['Text'] ?? null,
                             ],
+
+
                             'facilities' => array_map(function ($amenity) {
-                       return $amenity['Description'] ?? '';  
+                            return $amenity['Description'] ?? '';  
                         }, $room['Amenities']['Amenity'] ?? []),  
                     ];
                                 
                     }, $hotel['HotelRateInfo']['Rooms']['Room'] ?? []),
                 
-                        'Image' => [
-                            'Single_image' => $hotel['HotelImageInfo']['ImageItem']['Image']['Url'] ?? null,
-                            'Type' => $hotel['HotelImageInfo']['ImageItem']['Image']['Type'] ?? null,
-                        ],
+                        // 'Image' => [
+                        //     'images' => $hotel['HotelImageInfo']['ImageItem']['Image']['Url'] ?? null,
+                        //     'Type' => $hotel['HotelImageInfo']['ImageItem']['Image']['Type'] ?? null,
+                        // ],
+                        "images"=>[
+                           $hotel['HotelImageInfo']['ImageItem']['Image']['Url'] ?? null,
+                        ]
+            
+            
                         
                
             ];
@@ -1116,48 +1174,86 @@ use Illuminate\Support\Facades\Cache;
             $responseData2 = $response2->json();
 
             // Filter second API response
+            // $filteredHotels1 = array_filter($responseData2['data'], function ($hotel) use ($countryCode, $cityCode, $hotelName) {
+            //     if (!empty($countryCode)) {
+            //         if (isset($hotel['country']) && $hotel['country'] === $countryCode) {
+            //             return true;
+            //         }
+            //         return false;
+            //     }
+
+            //     if (!empty($cityCode)) {
+            //         if (isset($hotel['cities']) && is_array($hotel['cities'])) {
+            //             foreach ($hotel['cities'] as $city) {
+            //                 if (isset($city['city']) && $city['city'] === $cityCode) {
+            //                     return true;
+            //                 }
+            //             }
+            //         }
+            //         return false;
+            //     }
+
+            //     if (!empty($hotelName)) {
+            //         if (isset($hotel['cities']) && is_array($hotel['cities'])) {
+            //             foreach ($hotel['cities'] as $city) {
+            //                 if (isset($city['hotels']) && is_array($city['hotels'])) {
+            //                     foreach ($city['hotels'] as $hotelInfo) {
+            //                         if (isset($hotelInfo['hotel']) && $hotelInfo['hotel'] === $hotelName) {
+            //                             return true;
+            //                         }
+            //                     }
+            //                 }
+            //             }
+            //         }
+            //         return false;
+            //     }
+            //     return false;
+            // });
+
+            // $filteredHotels1 = array_filter($responseData2['data'], function ($hotel) use ($countryCode, $cityCode, $hotelName) {
+            //     // Filter by countryCode
+            //     if (!empty($countryCode)) {
+            //         if (!isset($hotel['country']) || $hotel['country'] !== $countryCode) {
+            //             return false;
+            //         }
+            //     }
+            
+            //     // Filter by cityCode
+            //     if (!empty($cityCode)) {
+            //         if (!isset($hotel['city']) || $hotel['city'] !== $cityCode) {
+            //             return false;
+            //         }
+            //     }
+            
+            //     // Filter by hotelName
+            //     if (!empty($hotelName)) {
+            //         if (!isset($hotel['hotel']) || $hotel['hotel'] !== $hotelName) {
+            //             return false;
+            //         }
+            //     }
+            //     return true;
+            // });
+
             $filteredHotels1 = array_filter($responseData2['data'], function ($hotel) use ($countryCode, $cityCode, $hotelName) {
-                if (!empty($countryCode)) {
-                    if (isset($hotel['country']) && $hotel['country'] === $countryCode) {
-                        return true;
-                    }
-                    return false;
-                }
-
-                if (!empty($cityCode)) {
-                    if (isset($hotel['cities']) && is_array($hotel['cities'])) {
-                        foreach ($hotel['cities'] as $city) {
-                            if (isset($city['city']) && $city['city'] === $cityCode) {
-                                return true;
-                            }
-                        }
-                    }
-                    return false;
-                }
-
-                if (!empty($hotelName)) {
-                    if (isset($hotel['cities']) && is_array($hotel['cities'])) {
-                        foreach ($hotel['cities'] as $city) {
-                            if (isset($city['hotels']) && is_array($city['hotels'])) {
-                                foreach ($city['hotels'] as $hotelInfo) {
-                                    if (isset($hotelInfo['hotel']) && $hotelInfo['hotel'] === $hotelName) {
-                                        return true;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    return false;
-                }
-                return false;
+                // Convert inputs to arrays if they are not already arrays
+                $countryCodes = is_array($countryCode) ? $countryCode : [$countryCode];
+                $cityCodes = is_array($cityCode) ? $cityCode : [$cityCode];
+                $hotelNames = is_array($hotelName) ? $hotelName : [$hotelName];
+            
+                // Check if hotel matches ANY condition (OR logic)
+                $matchesCountry = isset($hotel['country']) && in_array($hotel['country'], $countryCodes);
+                $matchesCity = isset($hotel['city']) && in_array($hotel['city'], $cityCodes);
+                $matchesHotelName = isset($hotel['hotel']) && in_array($hotel['hotel'], $hotelNames);
+            
+                // Return true if ANY of the conditions match
+                return $matchesCountry || $matchesCity || $matchesHotelName;
             });
+            
 
             $combinedData = [
                 'data' => array_merge( $filteredHotels1,$transformedHotels)
             ];
             
-            
-            // Return the combined data in the JSON response
             return response()->json($combinedData);
         } else {
             Log::error('Second API request failed', [
